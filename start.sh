@@ -1,33 +1,45 @@
 #!/bin/bash
 
-# Define the directory to watch
-WATCH_DIR="src"
-
-# Function to compile the project
-
-is_port_available() {
-    netstat -tuln | grep ":$PORT " > /dev/null
-    return $?
-}
-start_server(){
-    java -jar target/server-application-1.0-SNAPSHOT.jar &
-
-}
+WATCH_DIR=src
+SERVER_JAR=target/server-application-1.0-SNAPSHOT.jar
+SERVER_PID=
 
 compile_project() {
-    pkill -f "java -jar target/server-application-1.0-SNAPSHOT.jar"
     echo "Detected change. Recompiling..."
+
+    # Stop the server before deleting the target directory
+    if [[ -n "$SERVER_PID" ]]; then
+        echo "Stopping server..."
+        if ps -p $SERVER_PID > /dev/null; then
+            kill $SERVER_PID
+            echo "Server stopped."
+        else
+            echo "Server is not running."
+        fi
+    fi
+
+    # Delete the target directory
+    rm -rf target
+
     mvn clean install
     echo "Compilation complete."
-    # Start the server
-    start_server
+
+    echo "Starting server..."
+    java -jar $SERVER_JAR &
+    SERVER_PID=$!
+    echo "Server started (PID: $SERVER_PID)."
 }
 
-# Compile and start the server initially
-compile_project
+watch_changes() {
+    echo "Watching directory: $WATCH_DIR"
+    while true; do
+        new_timestamp=$(find $WATCH_DIR -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d" ")
+        if [[ "$new_timestamp" != "$timestamp" ]]; then
+            timestamp=$new_timestamp
+            compile_project
+        fi
+        sleep 1
+    done
+}
 
-# Watch for changes in the directory
-while inotifywait -r -e modify --exclude '\.class$' "$WATCH_DIR"; do
-    compile_project
-done
-
+watch_changes

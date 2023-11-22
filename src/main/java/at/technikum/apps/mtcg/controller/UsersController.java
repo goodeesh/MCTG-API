@@ -19,40 +19,43 @@ public class UsersController implements Controller {
         Integer positionOfSecondSlash = route.indexOf("/", 1);
         System.err.println(positionOfSecondSlash);
         if (positionOfSecondSlash != -1) {
-            username = route.substring(positionOfSecondSlash+1,route.length());
+            username = route.substring(positionOfSecondSlash + 1, route.length());
             System.err.println(username);
 
         }
-        if(positionOfSecondSlash == -1) { //no username set
+        if (positionOfSecondSlash == -1) { // no username set
             switch (request.getMethod()) {
-            case "GET":
-                System.err.println("this is a get request in " + request.getRoute() + "... handling it");
-                break;
-            case "POST":
-                System.err.println("this is a post request in " + request.getRoute() + "... handling it");
-                break;
-            case "PUT":
-                System.err.println("this is a put request in " + request.getRoute() + "... handling it");
-                break;
-            default:
-                break;
+                case "GET":
+                    System.err.println("this is a get request in " + request.getRoute() + "... handling it");
+                    break;
+                case "POST":
+                    System.err.println("this is a post request in " + request.getRoute() + "... handling it");
+                    break;
+                case "PUT":
+                    System.err.println("this is a put request in " + request.getRoute() + "... handling it");
+                    break;
+                default:
+                    break;
             }
-        } else { //username was set
+        } else { // username was set
             switch (request.getMethod()) {
-            case "GET":
-                System.err.println("this is a GET request in " + request.getRoute() + "... handling it for user " + username);
-                break;
-            case "PUT":
-                System.err.println("this is a PUT request in " + request.getRoute() + "... handling it for user " + username);
-                break;
-            default:
-                break;
+                case "GET":
+                    System.err.println(
+                            "this is a GET request in " + request.getRoute() + "... handling it for user " + username);
+                    break;
+                case "PUT":
+                    System.err.println(
+                            "this is a PUT request in " + request.getRoute() + "... handling it for user " + username);
+                    break;
+                default:
+                    break;
             }
         }
         Response response = new Response();
         response.setStatus(HttpStatus.OK);
         response.setContentType(HttpContentType.TEXT_PLAIN);
-        response.setBody("users controller");
+
+        response.setBody("hi! from users controller");
 
         return response;
     }
