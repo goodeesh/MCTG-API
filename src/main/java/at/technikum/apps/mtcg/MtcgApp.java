@@ -39,6 +39,7 @@ public class MtcgApp implements ServerApplication {
 
     @Override
     public Response handle(Request request) {
+        
         String route = request.getRoute();
         Integer positionOfSecondSlash = route.indexOf("/", 1);
         String controllerString;

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RequestHandler {
 
@@ -30,8 +32,8 @@ public class RequestHandler {
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
         String httpRequest = getHttpStringFromStream(in);
-
         Request request = HttpMapper.toRequestObject(httpRequest);
+        System.err.println(request.getRoute());
         Response response = app.handle(request);
 
         out = new PrintWriter(client.getOutputStream(), true);
@@ -51,6 +53,22 @@ public class RequestHandler {
                     .append(inputLine)
                     .append(System.lineSeparator());
         }
+
+        String httpRequest = builder.toString();
+
+        Pattern regex = Pattern.compile("^Content-Length:\\s(.+)", Pattern.MULTILINE);
+        Matcher matcher = regex.matcher(httpRequest);
+
+        if (!matcher.find()) {
+            return builder.toString();
+        }
+
+        builder.append(System.lineSeparator());
+
+        int contentLength = Integer.parseInt(matcher.group(1));
+        char[] buffer = new char[contentLength];
+        in.read(buffer, 0, contentLength);
+        builder.append(buffer);
 
         return builder.toString();
     }

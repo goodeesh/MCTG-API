@@ -17,6 +17,21 @@ public class HttpMapper {
         request.setRoute(getRoute(httpRequest));
         request.setHost(getHttpHeader("Host", httpRequest));
 
+        // THOUGHT: don't do the content parsing in this method
+        String contentLengthHeader = getHttpHeader("Content-Length", httpRequest);
+        if (null == contentLengthHeader) {
+            return request;
+        }
+
+        int contentLength = Integer.parseInt(contentLengthHeader);
+        request.setContentLength(contentLength);
+
+        if (0 == contentLength) {
+            return request;
+        }
+
+        request.setBody(httpRequest.substring(httpRequest.length() - contentLength));
+
         return request;
     }
 
@@ -32,7 +47,6 @@ public class HttpMapper {
     // THOUGHT: Maybe some better place for this logic?
     private static HttpMethod getHttpMethod(String httpRequest) {
         String httpMethod = httpRequest.split(" ")[0];
-
         // THOUGHT: Use constants instead of hardcoded strings
         return switch (httpMethod) {
             case "GET" -> HttpMethod.GET;
