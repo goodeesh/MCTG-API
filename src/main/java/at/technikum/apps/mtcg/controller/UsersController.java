@@ -55,7 +55,7 @@ public class UsersController implements Controller {
         response.setStatus(HttpStatus.OK);
         response.setContentType(HttpContentType.TEXT_PLAIN);
 
-        response.setBody("hi! from users controller");
+        response.setBody("welcome! from users controller");
 
         return response;
     }

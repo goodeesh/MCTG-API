@@ -19,7 +19,7 @@ compile_project() {
     fi
 
     # Delete the target directory
-    rm -rf target
+    #rm -rf target
 
     mvn clean install
     echo "Compilation complete."
