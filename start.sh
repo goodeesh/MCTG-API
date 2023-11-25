@@ -21,16 +21,16 @@ compile_project() {
 
     kill_port_process
 
-    # Stop the server before deleting the target directory
-    # if [[ -n "$SERVER_PID" ]]; then
-    #     echo "Stopping server..."
-    #     if ps -p $SERVER_PID > /dev/null; then
-    #         kill $SERVER_PID
-    #         echo "Server stopped."
-    #     else
-    #         echo "Server is not running."
-    #     fi
-    # fi
+    Stop the server before deleting the target directory
+    if [[ -n "$SERVER_PID" ]]; then
+        echo "Stopping server..."
+        if ps -p $SERVER_PID > /dev/null; then
+            kill $SERVER_PID
+            echo "Server stopped."
+        else
+            echo "Server is not running."
+        fi
+    fi
 
     # Delete the target directory
     #rm -rf target

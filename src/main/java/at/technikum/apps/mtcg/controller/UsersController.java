@@ -37,7 +37,7 @@ public class UsersController implements Controller {
             switch (request.getMethod()) {
                 case "GET":
                     System.err.println("this is a get request in " + request.getRoute() + "... handling it");
-                    break;
+                    return findAll(request);
                 case "POST":
                     System.err.println("this is a post request in " + request.getRoute() + "... handling it");
                     return create(request);
@@ -50,7 +50,7 @@ public class UsersController implements Controller {
         } else { // username was set
             switch (request.getMethod()) {
                 case "GET":
-                System.err.println(request.getBody());
+                    System.err.println(request.getBody());
                     System.err.println(
                             "this is a GET request in " + request.getRoute() + "... handling it for user " + username);
                     break;
@@ -63,10 +63,6 @@ public class UsersController implements Controller {
             }
         }
 
-        
-
-        
-        
         Response response = new Response();
         response.setStatus(HttpStatus.OK);
         response.setContentType(HttpContentType.TEXT_PLAIN);
@@ -75,36 +71,53 @@ public class UsersController implements Controller {
 
         return response;
     }
-    public Response create(Request request) {
-            System.err.println(request.getBody());
-            ObjectMapper objectMapper = new ObjectMapper();
-            User user = null;
-            try {
-                user = objectMapper.readValue(request.getBody(), User.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
 
-            
-            // task = toObject(request.getBody(), Task.class);
-            System.err.println(user);
-            user = userService.save(user);
-    
-            String taskJson = null;
-            try {
-                taskJson = objectMapper.writeValueAsString(user);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-    
-            Response response = new Response();
-            // THOUGHT: better status 201 Created
-            response.setStatus(HttpStatus.OK);
-            response.setContentType(HttpContentType.APPLICATION_JSON);
-            response.setBody(taskJson);
-    
-            return response;
-    
-            // return json(task);
+    public Response create(Request request) {
+        System.err.println(request.getBody());
+        ObjectMapper objectMapper = new ObjectMapper();
+        User user = null;
+        try {
+            user = objectMapper.readValue(request.getBody(), User.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
+
+        // task = toObject(request.getBody(), Task.class);
+        System.err.println(user);
+        user = userService.save(user);
+
+        String taskJson = null;
+        try {
+            taskJson = objectMapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        Response response = new Response();
+        // THOUGHT: better status 201 Created
+        response.setStatus(HttpStatus.OK);
+        response.setContentType(HttpContentType.APPLICATION_JSON);
+        response.setBody(taskJson);
+
+        return response;
+
+        // return json(task);
+    }
+
+    public Response findAll(Request request) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String usersJson = null;
+        try {
+            usersJson = objectMapper.writeValueAsString(userService.findAll());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        Response response = new Response();
+        response.setStatus(HttpStatus.OK);
+        response.setContentType(HttpContentType.APPLICATION_JSON);
+        response.setBody(usersJson);
+
+        return response;
+    }
 }

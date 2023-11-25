@@ -1,15 +1,22 @@
 package at.technikum.apps.mtcg.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import at.technikum.apps.mtcg.entity.User;
 
 public class UserRepository {
+    List<User> users;
+
+    public UserRepository() {
+        this.users = new ArrayList<>();
+    }
+
     public List<User> findAll() {
         // Your implementation here
         // Return a list of all users
-        return null;
+        return this.users;
     }
 
     public Optional<User> find(int id) {
@@ -19,8 +26,8 @@ public class UserRepository {
     }
 
     public User save(User user) {
-        // Your implementation here
-        // Save the user and return the saved user
+        user.setId(users.size() + 1);
+        users.add(user);
         return user;
     }
 

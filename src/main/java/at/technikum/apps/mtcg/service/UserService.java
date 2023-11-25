@@ -1,5 +1,6 @@
 package at.technikum.apps.mtcg.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import at.technikum.apps.mtcg.repository.UserRepository;
 
 public class UserService {
     private final UserRepository UserRepository;
+
     public UserService() {
         this.UserRepository = new UserRepository();
     }
