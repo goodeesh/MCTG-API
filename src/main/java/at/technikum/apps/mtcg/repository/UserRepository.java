@@ -25,7 +25,7 @@ public class UserRepository {
         return null;
     }
 
-    public User update(int updateId, User updatedUser) {
+    public Optional<User> update(int updateId, User updatedUser) {
         int indexToUpdate = -1; // -1 means not found
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId() == updateId) {
@@ -36,9 +36,9 @@ public class UserRepository {
         if (indexToUpdate != -1) {
             users.set(indexToUpdate, updatedUser);
         } else {
-            throw new IllegalArgumentException("User with id " + updateId + " not found");
+            return Optional.empty();
         }
-        return updatedUser;
+        return Optional.of(updatedUser);
     }
 
     public User save(User user) {

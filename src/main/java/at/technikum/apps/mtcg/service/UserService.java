@@ -26,7 +26,7 @@ public class UserService {
         return UserRepository.save(User);
     }
 
-    public User update(int updateId, User updatedUser) {
+    public Optional<User> update(int updateId, User updatedUser) {
         return UserRepository.update(updateId, updatedUser);
     }
 

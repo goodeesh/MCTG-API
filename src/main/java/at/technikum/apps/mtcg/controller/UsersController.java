@@ -6,6 +6,9 @@ import at.technikum.server.http.HttpContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
+
+import java.util.Optional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -80,12 +83,19 @@ public class UsersController implements Controller {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        Optional<User> userOptional = null;
         try {
-            user = userService.update(user.getId(), user);
+            userOptional = userService.update(user.getId(), user);
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
-
+        if (userOptional.isEmpty()) {
+            Response response = new Response();
+            response.setStatus(HttpStatus.NOT_FOUND);
+            response.setContentType(HttpContentType.TEXT_PLAIN);
+            response.setBody("User with id " + user.getId() + " not found");
+            return response;
+        }
         String taskJson = null;
         try {
             taskJson = objectMapper.writeValueAsString(user);
