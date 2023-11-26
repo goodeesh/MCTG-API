@@ -25,6 +25,22 @@ public class UserRepository {
         return null;
     }
 
+    public User update(int updateId, User updatedUser) {
+        int indexToUpdate = -1; // -1 means not found
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == updateId) {
+                indexToUpdate = i;
+                break;
+            }
+        }
+        if (indexToUpdate != -1) {
+            users.set(indexToUpdate, updatedUser);
+        } else {
+            throw new IllegalArgumentException("User with id " + updateId + " not found");
+        }
+        return updatedUser;
+    }
+
     public User save(User user) {
         user.setId(users.size() + 1);
         users.add(user);

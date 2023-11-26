@@ -43,7 +43,7 @@ public class UsersController implements Controller {
                     return create(request);
                 case "PUT":
                     System.err.println("this is a put request in " + request.getRoute() + "... handling it");
-                    break;
+                    return update(request);
                 default:
                     break;
             }
@@ -70,6 +70,37 @@ public class UsersController implements Controller {
         response.setBody("servus! from users controller");
 
         return response;
+    }
+
+    public Response update(Request request) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User user = null;
+        try {
+            user = objectMapper.readValue(request.getBody(), User.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            user = userService.update(user.getId(), user);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+
+        String taskJson = null;
+        try {
+            taskJson = objectMapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        Response response = new Response();
+        // THOUGHT: better status 201 Created
+        response.setStatus(HttpStatus.OK);
+        response.setContentType(HttpContentType.APPLICATION_JSON);
+        response.setBody(taskJson);
+
+        return response;
+
+        // return json(task);
     }
 
     public Response create(Request request) {

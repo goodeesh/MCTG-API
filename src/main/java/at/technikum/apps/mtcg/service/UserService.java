@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public User update(int updateId, User updatedUser) {
-        return null;
+        return UserRepository.update(updateId, updatedUser);
     }
 
     public User delete(User User) {
