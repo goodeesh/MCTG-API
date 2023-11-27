@@ -1,6 +1,5 @@
 package at.technikum.apps.mtcg.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class UserService {
         return UserRepository.save(User);
     }
 
-    public Optional<User> update(int updateId, User updatedUser) {
+    public Optional<User> update(String updateId, User updatedUser) {
         return UserRepository.update(updateId, updatedUser);
     }
 

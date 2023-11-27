@@ -2,15 +2,15 @@ package at.technikum.apps.mtcg.entity;
 
 public class User {
 
-    private int id;
+    private String id;
     private String name;
     private String address;
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

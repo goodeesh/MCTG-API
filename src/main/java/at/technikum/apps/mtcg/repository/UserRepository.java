@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import at.technikum.apps.mtcg.entity.User;
+import java.util.UUID;
 
 public class UserRepository {
     List<User> users;
@@ -25,10 +26,10 @@ public class UserRepository {
         return null;
     }
 
-    public Optional<User> update(int updateId, User updatedUser) {
+    public Optional<User> update(String updateId, User updatedUser) {
         int indexToUpdate = -1; // -1 means not found
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == updateId) {
+            if (users.get(i).getId().equals(updateId)) {
                 indexToUpdate = i;
                 break;
             }
@@ -42,7 +43,8 @@ public class UserRepository {
     }
 
     public User save(User user) {
-        user.setId(users.size() + 1);
+        //use UUID to generate a unique id
+        user.setId(UUID.randomUUID().toString());
         users.add(user);
         return user;
     }

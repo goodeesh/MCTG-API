@@ -1,7 +1,5 @@
 package at.technikum.server;
 
-import at.technikum.server.http.HttpContentType;
-import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import at.technikum.server.util.HttpMapper;
