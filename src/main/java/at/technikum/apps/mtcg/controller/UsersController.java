@@ -57,7 +57,7 @@ public class UsersController implements Controller {
                 case "PUT":
                     System.err.println(
                             "this is a PUT request in " + request.getRoute() + "... handling it for user " + userId);
-                    return update(userId, request);
+                    return update(userId, request, "admin");
                 default:
                     break;
             }
@@ -72,7 +72,7 @@ public class UsersController implements Controller {
         return response;
     }
 
-    public Response update(String userId, Request request) {
+    public Response update(String userId, Request request, String username) {
         ObjectMapper objectMapper = new ObjectMapper();
         User user = null;
         System.err.println("update user id: " + userId);
@@ -84,7 +84,7 @@ public class UsersController implements Controller {
         }
         Optional<User> userOptional = null;
         try {
-            userOptional = userService.update(userId, user);
+            userOptional = userService.update(userId, user, username);
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
@@ -129,7 +129,7 @@ public class UsersController implements Controller {
             Response response = new Response();
             response.setStatus(HttpStatus.CONFLICT);
             response.setContentType(HttpContentType.TEXT_PLAIN);
-            response.setBody("User with id " + user.getId() + " not found");
+            response.setBody("Username: " + user.getUsername() + " cannot be registered");
             return response;
         } else{
             user = userOptional.get();
@@ -141,7 +141,6 @@ public class UsersController implements Controller {
         }
 
         Response response = new Response();
-        // THOUGHT: better status 201 Created
         response.setStatus(HttpStatus.CREATED);
         response.setContentType(HttpContentType.APPLICATION_JSON);
         response.setBody(taskJson);

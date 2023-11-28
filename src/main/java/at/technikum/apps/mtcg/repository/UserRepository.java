@@ -15,7 +15,7 @@ public class UserRepository {
     List<User> users;
 
     private final String FIND_ALL_SQL = "SELECT * FROM users";
-    private final String SAVE_SQL = "INSERT INTO users(id, name, address) VALUES(?, ?, ?)";
+    private final String SAVE_SQL = "INSERT INTO users(id, username, password) VALUES(?, ?, ?)";
 
     private final Database database = new Database();
 
@@ -34,8 +34,8 @@ public class UserRepository {
             while (resultSet.next()) {
                 User user = new User(
                         resultSet.getString("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("address"));
+                        resultSet.getString("username"),
+                        resultSet.getString("password"));
                 users.add(user);
             }
             return this.users;
@@ -65,16 +65,27 @@ public class UserRepository {
                 return Optional.empty();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return Optional.empty();
         }
     }
 
-    public Optional<User> update(String updateId, User updatedUser) {
+    public Optional<User> update(String updateId, User updatedUser, String username) {
+        
+        if (username == null || username.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<User> userToUpdate = find(updateId);
+        if (userToUpdate.isEmpty()) {
+            return Optional.empty();
+        }
+        if (!userToUpdate.get().getUsername().equals(username)) {
+            return Optional.empty();
+        }
         try (
                 Connection connection = database.getConnection();
-                PreparedStatement statement = connection.prepareStatement("UPDATE users SET name = ?, address = ? WHERE id = ?");) {
-            statement.setString(1, updatedUser.getName());
-            statement.setString(2, updatedUser.getAddress());
+                PreparedStatement statement = connection.prepareStatement("UPDATE users SET username = ?, password = ? WHERE id = ?");) {
+            statement.setString(1, updatedUser.getUsername());
+            statement.setString(2, updatedUser.getPassword());
             statement.setString(3, updateId);
             statement.executeUpdate();
         } catch (Exception e) {
@@ -93,8 +104,8 @@ public class UserRepository {
                 Connection connection = database.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SAVE_SQL);) {
             statement.setString(1, user.getId());
-            statement.setString(2, user.getName());
-            statement.setString(3, user.getAddress());
+            statement.setString(2, user.getUsername());
+            statement.setString(3, user.getPassword());
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
