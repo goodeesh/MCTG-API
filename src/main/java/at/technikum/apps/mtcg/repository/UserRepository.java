@@ -81,10 +81,11 @@ public class UserRepository {
             e.printStackTrace();
             return Optional.empty();
         }
+        updatedUser.setId(updateId);
         return Optional.of(updatedUser);
     }
 
-    public User save(User user) {
+    public Optional<User> save(User user) {
         // use UUID to generate a unique id
         user.setId(UUID.randomUUID().toString());
         // save user to database
@@ -97,9 +98,9 @@ public class UserRepository {
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return Optional.empty();
         }
-        return user;
+        return Optional.of(user);
     }
 
     public User delete(User user) {

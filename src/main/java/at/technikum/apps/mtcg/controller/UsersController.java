@@ -44,9 +44,6 @@ public class UsersController implements Controller {
                 case "POST":
                     System.err.println("this is a post request in " + request.getRoute() + "... handling it");
                     return create(request);
-                case "PUT":
-                    System.err.println("this is a put request in " + request.getRoute() + "... handling it");
-                    return update(request);
                 default:
                     break;
             }
@@ -60,7 +57,7 @@ public class UsersController implements Controller {
                 case "PUT":
                     System.err.println(
                             "this is a PUT request in " + request.getRoute() + "... handling it for user " + userId);
-                    break;
+                    return update(userId, request);
                 default:
                     break;
             }
@@ -75,9 +72,11 @@ public class UsersController implements Controller {
         return response;
     }
 
-    public Response update(Request request) {
+    public Response update(String userId, Request request) {
         ObjectMapper objectMapper = new ObjectMapper();
         User user = null;
+        System.err.println("update user id: " + userId);
+
         try {
             user = objectMapper.readValue(request.getBody(), User.class);
         } catch (JsonProcessingException e) {
@@ -85,7 +84,7 @@ public class UsersController implements Controller {
         }
         Optional<User> userOptional = null;
         try {
-            userOptional = userService.update(user.getId(), user);
+            userOptional = userService.update(userId, user);
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
@@ -122,12 +121,19 @@ public class UsersController implements Controller {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
+        Optional<User> userOptional = null;
         // task = toObject(request.getBody(), Task.class);
         System.err.println(user);
-        user = userService.save(user);
-
-        String taskJson = null;
+        userOptional = userService.save(user);
+        if (userOptional.isEmpty()) {
+            Response response = new Response();
+            response.setStatus(HttpStatus.CONFLICT);
+            response.setContentType(HttpContentType.TEXT_PLAIN);
+            response.setBody("User with id " + user.getId() + " not found");
+            return response;
+        } else{
+            user = userOptional.get();
+            String taskJson = null;
         try {
             taskJson = objectMapper.writeValueAsString(user);
         } catch (JsonProcessingException e) {
@@ -136,11 +142,13 @@ public class UsersController implements Controller {
 
         Response response = new Response();
         // THOUGHT: better status 201 Created
-        response.setStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.CREATED);
         response.setContentType(HttpContentType.APPLICATION_JSON);
         response.setBody(taskJson);
 
         return response;
+        }
+        
 
         // return json(task);
     }

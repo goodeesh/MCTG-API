@@ -21,7 +21,7 @@ public class UserService {
         return Optional.empty();
     }
 
-    public User save(User User) {
+    public Optional<User> save(User User) {
         return UserRepository.save(User);
     }
 
