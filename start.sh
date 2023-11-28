@@ -5,6 +5,18 @@ WATCH_DIR=src
 SERVER_JAR=target/server-application-1.0-SNAPSHOT.jar
 SERVER_PID=
 
+trap cleanup INT
+
+cleanup() {
+    echo "Stopping server and database..."
+    if [[ -n "$SERVER_PID" ]]; then
+        kill $SERVER_PID
+    fi
+    docker stop mtcgdb
+    echo "Server and database stopped."
+    exit 0
+}
+
 kill_port_process() {
     echo "Checking if port 1001 is in use..."
     PORT_PID=$(lsof -t -i:10001)
@@ -58,4 +70,12 @@ watch_changes() {
     done
 }
 
+start_database() {
+    echo "Starting PostgreSQL database..."
+    docker start mtcgdb
+    docker exec mtcgdb psql -U postgres -d mydb -c '\l'
+    echo "Database started."
+}
+
+start_database
 watch_changes

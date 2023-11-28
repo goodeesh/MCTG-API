@@ -1,3 +1,5 @@
 commands to start database:
 docker start mtcgdb
 docker exec -it mtcgdb bash
+psql -U postgres
+\c mydb
