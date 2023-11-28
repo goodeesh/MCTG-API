@@ -25,12 +25,12 @@ public class UserService {
         return UserRepository.save(User);
     }
 
-    public Optional<User> find(String id) {
-        return UserRepository.find(id);
+    public Optional<User> find(String username) {
+        return UserRepository.find(username);
     }
 
-    public Optional<User> update(String updateId, User updatedUser, String username) {
-        return UserRepository.update(updateId, updatedUser, username);
+    public Optional<User> update(String usernameToUpdate, User updatedUser, String username) {
+        return UserRepository.update(usernameToUpdate, updatedUser, username);
     }
 
     public User delete(User User) {

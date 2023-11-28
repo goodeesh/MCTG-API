@@ -28,12 +28,12 @@ public class UsersController implements Controller {
     @Override
     public Response handle(Request request) {
         String route = request.getRoute();
-        String userId = "";
+        String username = "";
         Integer positionOfSecondSlash = route.indexOf("/", 1);
         System.err.println(positionOfSecondSlash);
         if (positionOfSecondSlash != -1) {
-            userId = route.substring(positionOfSecondSlash + 1, route.length());
-            System.err.println(userId);
+            username = route.substring(positionOfSecondSlash + 1, route.length());
+            System.err.println(username);
 
         }
         if (positionOfSecondSlash == -1) { // no username set
@@ -52,12 +52,12 @@ public class UsersController implements Controller {
                 case "GET":
                     System.err.println(request.getBody());
                     System.err.println(
-                            "this is a GET request in " + request.getRoute() + "... handling it for user " + userId);
-                    return find(userId);
+                            "this is a GET request in " + request.getRoute() + "... handling it for user " + username);
+                    return find(username);
                 case "PUT":
                     System.err.println(
-                            "this is a PUT request in " + request.getRoute() + "... handling it for user " + userId);
-                    return update(userId, request, "admin");
+                            "this is a PUT request in " + request.getRoute() + "... handling it for user " + username);
+                    return update(username, request, "admin");
                 default:
                     break;
             }
@@ -72,10 +72,10 @@ public class UsersController implements Controller {
         return response;
     }
 
-    public Response update(String userId, Request request, String username) {
+    public Response update(String usernameToUpdate, Request request, String username) {
         ObjectMapper objectMapper = new ObjectMapper();
         User user = null;
-        System.err.println("update user id: " + userId);
+        System.err.println("update user with username: " + usernameToUpdate);
 
         try {
             user = objectMapper.readValue(request.getBody(), User.class);
@@ -84,7 +84,7 @@ public class UsersController implements Controller {
         }
         Optional<User> userOptional = null;
         try {
-            userOptional = userService.update(userId, user, username);
+            userOptional = userService.update(usernameToUpdate, user, username);
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
@@ -169,11 +169,11 @@ public class UsersController implements Controller {
         return response;
     }
 
-    public Response find(String userId) {
+    public Response find(String username) {
         ObjectMapper objectMapper = new ObjectMapper();
         Optional<User> userOptional = null;
         try {
-            userOptional = userService.find(userId);
+            userOptional = userService.find(username);
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
@@ -181,7 +181,7 @@ public class UsersController implements Controller {
             Response response = new Response();
             response.setStatus(HttpStatus.NOT_FOUND);
             response.setContentType(HttpContentType.TEXT_PLAIN);
-            response.setBody("User with id " + userId + " not found");
+            response.setBody("User " + username + " not found");
             return response;
         } else {
             String userJson = null;

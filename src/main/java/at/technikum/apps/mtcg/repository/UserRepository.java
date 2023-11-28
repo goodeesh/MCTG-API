@@ -45,19 +45,19 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> find(String id) {
+    public Optional<User> find(String username) {
         User user = null;
-        // recover user from database
+        System.err.println("find user with username " + username);
         try (
                 Connection connection = database.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE id = ?");) {
-            statement.setString(1, id);
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?");) {
+            statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 user = new User(
                         resultSet.getString("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("address"));
+                        resultSet.getString("username"),
+                        resultSet.getString("password"));
             }
             if (user != null)
                 return Optional.ofNullable(user);
@@ -69,12 +69,12 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> update(String updateId, User updatedUser, String username) {
-        
+    public Optional<User> update(String usernameToUpdate, User updatedUser, String username) {
+
         if (username == null || username.isEmpty()) {
             return Optional.empty();
         }
-        Optional<User> userToUpdate = find(updateId);
+        Optional<User> userToUpdate = find(usernameToUpdate);
         if (userToUpdate.isEmpty()) {
             return Optional.empty();
         }
@@ -83,16 +83,16 @@ public class UserRepository {
         }
         try (
                 Connection connection = database.getConnection();
-                PreparedStatement statement = connection.prepareStatement("UPDATE users SET username = ?, password = ? WHERE id = ?");) {
+                PreparedStatement statement = connection.prepareStatement("UPDATE users SET username = ?, password = ? WHERE username = ?");) {
             statement.setString(1, updatedUser.getUsername());
             statement.setString(2, updatedUser.getPassword());
-            statement.setString(3, updateId);
+            statement.setString(3, usernameToUpdate);
             statement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
-        updatedUser.setId(updateId);
+        updatedUser = find(usernameToUpdate).get();
         return Optional.of(updatedUser);
     }
 
