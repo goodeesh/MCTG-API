@@ -69,21 +69,6 @@ public class UserRepository {
         }
     }
 
-    // public Optional<User> update(String updateId, User updatedUser) {
-    //     int indexToUpdate = -1; // -1 means not found
-    //     for (int i = 0; i < users.size(); i++) {
-    //         if (users.get(i).getId().equals(updateId)) {
-    //             indexToUpdate = i;
-    //             break;
-    //         }
-    //     }
-    //     if (indexToUpdate != -1) {
-    //         users.set(indexToUpdate, updatedUser);
-    //     } else {
-    //         return Optional.empty();
-    //     }
-    //     return Optional.of(updatedUser);
-    // }
     public Optional<User> update(String updateId, User updatedUser) {
         try (
                 Connection connection = database.getConnection();

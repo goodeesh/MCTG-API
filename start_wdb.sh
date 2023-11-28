@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 WATCH_DIR=src
 SERVER_JAR=target/server-application-1.0-SNAPSHOT.jar
 SERVER_PID=
