@@ -1,23 +1,50 @@
 package at.technikum.apps.mtcg.repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.User;
 import java.util.UUID;
 
 public class UserRepository {
     List<User> users;
 
+    private final String FIND_ALL_SQL = "SELECT * FROM users";
+    private final String SAVE_SQL = "INSERT INTO users(id, name, address) VALUES(?, ?, ?)";
+
+    private final Database database = new Database();
+
     public UserRepository() {
         this.users = new ArrayList<>();
     }
 
     public List<User> findAll() {
-        // Your implementation here
-        // Return a list of all users
-        return this.users;
+        this.users = new ArrayList<>();
+
+        //recover users from database
+        try (
+            Connection connection = database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_ALL_SQL);
+            ResultSet resultSet = statement.executeQuery();
+        ){
+            while (resultSet.next()) {
+                User user = new User(
+                resultSet.getString("id"),
+                resultSet.getString("name"),
+                resultSet.getString("address")
+                );
+                users.add(user);
+            }
+            return this.users;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Optional<User> find(int id) {
@@ -45,7 +72,19 @@ public class UserRepository {
     public User save(User user) {
         //use UUID to generate a unique id
         user.setId(UUID.randomUUID().toString());
-        users.add(user);
+        //save user to database
+        try (
+            Connection connection = database.getConnection();
+            PreparedStatement statement = connection.prepareStatement(SAVE_SQL);
+        ){
+            statement.setString(1, user.getId());
+            statement.setString(2, user.getName());
+            statement.setString(3, user.getAddress());
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
         return user;
     }
 

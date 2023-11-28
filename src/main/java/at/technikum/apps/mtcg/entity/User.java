@@ -6,6 +6,14 @@ public class User {
     private String name;
     private String address;
 
+    public User() {
+    }
+    public User(String id, String name, String address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+    }
+
     public String getId() {
         return this.id;
     }
