@@ -25,6 +25,10 @@ public class UserService {
         return UserRepository.save(User);
     }
 
+    public Optional<User> find(String id) {
+        return UserRepository.find(id);
+    }
+
     public Optional<User> update(String updateId, User updatedUser) {
         return UserRepository.update(updateId, updatedUser);
     }

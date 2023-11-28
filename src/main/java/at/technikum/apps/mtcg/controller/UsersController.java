@@ -28,12 +28,12 @@ public class UsersController implements Controller {
     @Override
     public Response handle(Request request) {
         String route = request.getRoute();
-        String username = "";
+        String userId = "";
         Integer positionOfSecondSlash = route.indexOf("/", 1);
         System.err.println(positionOfSecondSlash);
         if (positionOfSecondSlash != -1) {
-            username = route.substring(positionOfSecondSlash + 1, route.length());
-            System.err.println(username);
+            userId = route.substring(positionOfSecondSlash + 1, route.length());
+            System.err.println(userId);
 
         }
         if (positionOfSecondSlash == -1) { // no username set
@@ -55,11 +55,11 @@ public class UsersController implements Controller {
                 case "GET":
                     System.err.println(request.getBody());
                     System.err.println(
-                            "this is a GET request in " + request.getRoute() + "... handling it for user " + username);
-                    break;
+                            "this is a GET request in " + request.getRoute() + "... handling it for user " + userId);
+                    return find(userId);
                 case "PUT":
                     System.err.println(
-                            "this is a PUT request in " + request.getRoute() + "... handling it for user " + username);
+                            "this is a PUT request in " + request.getRoute() + "... handling it for user " + userId);
                     break;
                 default:
                     break;
@@ -160,5 +160,34 @@ public class UsersController implements Controller {
         response.setBody(usersJson);
 
         return response;
+    }
+
+    public Response find(String userId) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Optional<User> userOptional = null;
+        try {
+            userOptional = userService.find(userId);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+        if (userOptional.isEmpty()) {
+            Response response = new Response();
+            response.setStatus(HttpStatus.NOT_FOUND);
+            response.setContentType(HttpContentType.TEXT_PLAIN);
+            response.setBody("User with id " + userId + " not found");
+            return response;
+        } else {
+            String userJson = null;
+            try {
+                userJson = objectMapper.writeValueAsString(userOptional.get());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            Response response = new Response();
+            response.setStatus(HttpStatus.OK);
+            response.setContentType(HttpContentType.APPLICATION_JSON);
+            response.setBody(userJson);
+            return response;
+        }
     }
 }

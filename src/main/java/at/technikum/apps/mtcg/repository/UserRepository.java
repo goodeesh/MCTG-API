@@ -26,18 +26,16 @@ public class UserRepository {
     public List<User> findAll() {
         this.users = new ArrayList<>();
 
-        //recover users from database
+        // recover users from database
         try (
-            Connection connection = database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(FIND_ALL_SQL);
-            ResultSet resultSet = statement.executeQuery();
-        ){
+                Connection connection = database.getConnection();
+                PreparedStatement statement = connection.prepareStatement(FIND_ALL_SQL);
+                ResultSet resultSet = statement.executeQuery();) {
             while (resultSet.next()) {
                 User user = new User(
-                resultSet.getString("id"),
-                resultSet.getString("name"),
-                resultSet.getString("address")
-                );
+                        resultSet.getString("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("address"));
                 users.add(user);
             }
             return this.users;
@@ -47,10 +45,28 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> find(int id) {
-        // Your implementation here
-        // Return an optional user with the specified id
-        return null;
+    public Optional<User> find(String id) {
+        User user = null;
+        // recover user from database
+        try (
+                Connection connection = database.getConnection();
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE id = ?");) {
+            statement.setString(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                user = new User(
+                        resultSet.getString("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("address"));
+            }
+            if (user != null)
+                return Optional.ofNullable(user);
+            else
+                return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Optional<User> update(String updateId, User updatedUser) {
@@ -70,13 +86,12 @@ public class UserRepository {
     }
 
     public User save(User user) {
-        //use UUID to generate a unique id
+        // use UUID to generate a unique id
         user.setId(UUID.randomUUID().toString());
-        //save user to database
+        // save user to database
         try (
-            Connection connection = database.getConnection();
-            PreparedStatement statement = connection.prepareStatement(SAVE_SQL);
-        ){
+                Connection connection = database.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SAVE_SQL);) {
             statement.setString(1, user.getId());
             statement.setString(2, user.getName());
             statement.setString(3, user.getAddress());
