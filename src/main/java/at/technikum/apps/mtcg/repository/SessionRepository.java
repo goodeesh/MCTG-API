@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.Session;
+import at.technikum.apps.mtcg.entity.User;
 
 
 
@@ -14,8 +15,8 @@ public class SessionRepository {
     List<Session> sessions;
 
     private final String FIND_ALL_SQL = "SELECT * FROM sessions";
-    private final String SAVE_SQL = "INSERT INTO sessions(id, userId) VALUES(?, ?)";
-    private final String DELETE_SQL = "DELETE FROM sessions WHERE id = ?";
+    private final String SAVE_SQL = "INSERT INTO sessions(id, token, username,created,expires) VALUES(?,?,?,?,?)";
+    private final String DELETE_SQL = "DELETE FROM sessions WHERE username = ?";
 
     private final Database database = new Database();
 
@@ -33,7 +34,6 @@ public class SessionRepository {
                 ResultSet resultSet = statement.executeQuery();) {
             while (resultSet.next()) {
                 Session session = new Session(
-                        resultSet.getString("id"),
                         resultSet.getString("userId"));
                 sessions.add(session);
             }
@@ -44,18 +44,17 @@ public class SessionRepository {
         }
     }
 
-    public Optional<Session> find(String sessionId) {
+    public Optional<Session> find(String username) {
         Session session = null;
-        System.err.println("find session with id " + sessionId);
+        System.err.println("find session with id " + username);
         try (
                 Connection connection = database.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM sessions WHERE id = ?");) {
-            statement.setString(1, sessionId);
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM sessions WHERE username = ?");) {
+            statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 session = new Session(
-                        resultSet.getString("id"),
-                        resultSet.getString("userId"));
+                        resultSet.getString("username"));
             }
             if (session != null)
                 return Optional.ofNullable(session);
@@ -67,28 +66,65 @@ public class SessionRepository {
         }
     }
 
-    public Optional<Session> save(Session session) {
-        // save session to database
-        
-        /* try (
+    public Optional<Session> findByToken(String token) {
+        Session session = null;
+        System.err.println("find session with token " + token);
+        try (
                 Connection connection = database.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SAVE_SQL);) {
-            statement.setString(1, session.getId());
-            statement.setString(2, session.getUserId());
-            statement.executeUpdate();
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM sessions WHERE token = ?");) {
+            statement.setString(1, token);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                session = new Session(
+                        resultSet.getString("username"));
+            }
+            if (session != null)
+                return Optional.ofNullable(session);
+            else
+                return Optional.empty();
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
-        return Optional.of(session); */
-        return Optional.empty();
+    }
+    
+    public Optional<Session> save(User user, Optional<String> token) {
+        // save session to database
+        UserRepository userRepository = new UserRepository();
+        Optional<User> userOptional = userRepository.find(user.getUsername());
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Invalid username/password provided");
+        }
+        if (!userOptional.get().getPassword().equals(user.getPassword())) {
+            throw new RuntimeException("Invalid username/password provided");
+        }
+        if(find(user.getUsername()).isPresent()){
+            delete(user.getUsername());
+        }
+        Session session = Optional.ofNullable(token).isEmpty() ? new Session(userOptional.get().getUsername()) : new Session(userOptional.get().getUsername(), token.get());
+        
+        try (
+                Connection connection = database.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SAVE_SQL);) {
+            statement.setString(1, session.getId());
+            statement.setString(2, session.getToken());
+            statement.setString(3, session.getUsername());
+            statement.setTimestamp(4, session.getCreated());
+            statement.setTimestamp(5, session.getExpires())
+            ;
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Internal server error");
+        }
+        return Optional.of(session);
     }
 
-    public boolean delete(String sessionId) {
+    public boolean delete(String username) {
         try (
                 Connection connection = database.getConnection();
                 PreparedStatement statement = connection.prepareStatement(DELETE_SQL);) {
-            statement.setString(1, sessionId);
+            statement.setString(1, username);
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.service.UserService;
 import at.technikum.server.http.HttpContentType;
@@ -57,7 +58,7 @@ public class UsersController implements Controller {
                 case "PUT":
                     System.err.println(
                             "this is a PUT request in " + request.getRoute() + "... handling it for user " + username);
-                    return update(username, request, "admin");
+                    return update(username, request);
                 default:
                     break;
             }
@@ -72,11 +73,12 @@ public class UsersController implements Controller {
         return response;
     }
 
-    public Response update(String usernameToUpdate, Request request, String username) {
+    public Response update(String usernameToUpdate, Request request) {
         ObjectMapper objectMapper = new ObjectMapper();
         User user = null;
+        Auth auth = getAuthInstance();
+        System.err.println(auth.getToken());
         System.err.println("update user with username: " + usernameToUpdate);
-
         try {
             user = objectMapper.readValue(request.getBody(), User.class);
         } catch (JsonProcessingException e) {
@@ -84,7 +86,7 @@ public class UsersController implements Controller {
         }
         Optional<User> userOptional = null;
         try {
-            userOptional = userService.update(usernameToUpdate, user, username);
+            userOptional = userService.update(usernameToUpdate, user, auth.getToken());
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
@@ -97,7 +99,7 @@ public class UsersController implements Controller {
         }
         String taskJson = null;
         try {
-            taskJson = objectMapper.writeValueAsString(user);
+            taskJson = objectMapper.writeValueAsString(userOptional.get());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -106,7 +108,6 @@ public class UsersController implements Controller {
         response.setStatus(HttpStatus.OK);
         response.setContentType(HttpContentType.APPLICATION_JSON);
         response.setBody(taskJson);
-
         return response;
 
         // return json(task);

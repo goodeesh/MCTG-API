@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import at.technikum.apps.mtcg.entity.Session;
+import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.repository.SessionRepository;
 
 
@@ -24,8 +25,8 @@ public class SessionService {
         return Optional.empty();
     }
 
-    public Optional<Session> save(Session session) {
-        return sessionRepository.save(session);
+    public Optional<Session> save(User user) {
+        return sessionRepository.save(user, null);
     }
 
     public Optional<Session> find(String username) {

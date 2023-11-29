@@ -1,11 +1,13 @@
 package at.technikum.apps.mtcg.entity;
 
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 public class Session {
-    private int id;
+    private String id;
     private String token;
     private String username;
     private Timestamp created;
@@ -14,18 +16,30 @@ public class Session {
     public Session() {
     }
     
-    public Session(String token, String username) {
+    public Session(String username) {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        String generatedToken = bytes.toString();
+        this.id = UUID.randomUUID().toString();
+        this.token = generatedToken;
+        this.username = username;
+        this.created = Timestamp.from(Instant.now());
+        this.expires = Timestamp.from(Instant.now().plus(Duration.ofHours(24)));
+    }
+    public Session(String username, String token) {
+        this.id = UUID.randomUUID().toString();
         this.token = token;
         this.username = username;
         this.created = Timestamp.from(Instant.now());
         this.expires = Timestamp.from(Instant.now().plus(Duration.ofHours(24)));
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
     
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
     

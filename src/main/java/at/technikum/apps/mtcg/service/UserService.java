@@ -29,8 +29,8 @@ public class UserService {
         return UserRepository.find(username);
     }
 
-    public Optional<User> update(String usernameToUpdate, User updatedUser, String username) {
-        return UserRepository.update(usernameToUpdate, updatedUser, username);
+    public Optional<User> update(String usernameToUpdate, User updatedUser, String token) {
+        return UserRepository.update(usernameToUpdate, updatedUser, token);
     }
 
     public User delete(User User) {

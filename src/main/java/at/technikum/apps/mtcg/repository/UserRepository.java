@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import at.technikum.apps.mtcg.data.Database;
+import at.technikum.apps.mtcg.entity.Session;
 import at.technikum.apps.mtcg.entity.User;
 import java.util.UUID;
 
@@ -69,16 +70,21 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> update(String usernameToUpdate, User updatedUser, String username) {
+    public Optional<User> update(String usernameToUpdate, User updatedUser, String token) {
 
-        if (username == null || username.isEmpty()) {
-            return Optional.empty();
-        }
+        SessionRepository sessionRepository = new SessionRepository();
+        Optional<Session> session = sessionRepository.findByToken(token);
         Optional<User> userToUpdate = find(usernameToUpdate);
         if (userToUpdate.isEmpty()) {
             return Optional.empty();
         }
-        if (!userToUpdate.get().getUsername().equals(username)) {
+        if (!userToUpdate.get().getUsername().equals(session.get().getUsername())) {
+            return Optional.empty();
+        }
+        try{
+            sessionRepository.delete(session.get().getUsername());
+        } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
         try (
@@ -92,8 +98,9 @@ public class UserRepository {
             e.printStackTrace();
             return Optional.empty();
         }
-        updatedUser = find(usernameToUpdate).get();
-        return Optional.of(updatedUser);
+        User dbUser = find(updatedUser.getUsername()).get();
+        sessionRepository.save(dbUser, Optional.ofNullable(token));
+        return Optional.of(dbUser);
     }
 
     public Optional<User> save(User user) {

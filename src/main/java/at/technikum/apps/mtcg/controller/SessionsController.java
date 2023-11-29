@@ -5,7 +5,9 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.Session;
+import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.service.SessionService;
 import at.technikum.server.http.HttpContentType;
 import at.technikum.server.http.HttpStatus;
@@ -44,33 +46,57 @@ public class SessionsController implements Controller {
         public Response create(Request request) {
         System.err.println(request.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
+        User user = null;
         Session session = null;
         try {
-            session = objectMapper.readValue(request.getBody(), Session.class);
+            user = objectMapper.readValue(request.getBody(), User.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        Optional<Session> userOptional = null;
-        // task = toObject(request.getBody(), Task.class);
+        Optional<Session> sessionOptional = null;
         System.err.println(session);
-        userOptional = sessionService.save(session);
-        if (userOptional.isEmpty()) {
+        try {
+            sessionOptional = sessionService.save(user);
+        } catch (Exception e) {
+            if (e.getMessage().contains("Invalid username/password provided")){
+                Response response = new Response();
+                response.setStatus(HttpStatus.UNAUTHORIZED);
+                response.setContentType(HttpContentType.TEXT_PLAIN);
+                response.setBody("Invalid username/password provided");
+                return response;
+            } else if (e.getMessage().contains("Internal server error")){
+                Response response = new Response();
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                response.setContentType(HttpContentType.TEXT_PLAIN);
+                response.setBody("Internal server error");
+                return response;
+            } else {
+                Response response = new Response();
+                response.setStatus(HttpStatus.CONFLICT);
+                response.setContentType(HttpContentType.TEXT_PLAIN);
+                response.setBody("Session could not be registered");
+                return response;
+            }
+        }
+        if (sessionOptional.isEmpty()) {
             Response response = new Response();
             response.setStatus(HttpStatus.CONFLICT);
             response.setContentType(HttpContentType.TEXT_PLAIN);
-            response.setBody("Session for " + session.getUsername() + " could not be registered");
+            response.setBody("Session could not be registered");
             return response;
         } else{
-            session = userOptional.get();
+            session = sessionOptional.get();
             String taskJson = null;
         try {
             taskJson = objectMapper.writeValueAsString(session);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
+        Auth auth = getAuthInstance();
+        auth.setToken(session.getToken());
+        System.err.println("token: " + auth.getToken());
         Response response = new Response();
-        response.setStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.OK);
         response.setContentType(HttpContentType.APPLICATION_JSON);
         response.setBody(taskJson);
 
