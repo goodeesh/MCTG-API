@@ -10,7 +10,8 @@ public enum HttpStatus {
     NO_CONTENT(204, "No Content"),
     UNAUTHORIZED(401, "Unauthorized"),
     FORBIDDEN(403, "Forbidden"),
-    CONFLICT(409, "Conflict");
+    CONFLICT(409, "Conflict"),
+    METHOD_NOT_ALLOWED(405, "Method Not Allowed");
 
     private final int code;
     private final String message;
