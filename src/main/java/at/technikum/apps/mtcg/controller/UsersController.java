@@ -79,14 +79,16 @@ public class UsersController implements Controller {
   }
 
   public Response update(String usernameToUpdate, Request request) {
+    System.err.println(
+      "this is the Authorization token: " + request.getAuthorization()
+    );
     ObjectMapper objectMapper = new ObjectMapper();
     User user = null;
-    Auth auth = getAuthInstance();
-    if (auth.getToken() == null) {
+    String authorizationToken = request.getAuthorization();
+    System.err.println(authorizationToken);
+    if (authorizationToken == "") {
       return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
     }
-    System.err.println(auth.getToken());
-    System.err.println("update user with username: " + usernameToUpdate);
     try {
       user = objectMapper.readValue(request.getBody(), User.class);
     } catch (JsonProcessingException e) {
@@ -95,7 +97,7 @@ public class UsersController implements Controller {
     Optional<User> userOptional = null;
     try {
       userOptional =
-        userService.update(usernameToUpdate, user, auth.getToken());
+        userService.update(usernameToUpdate, user, authorizationToken);
     } catch (NumberFormatException e) {
       if (
         e.getMessage().equals("Session not found") ||
