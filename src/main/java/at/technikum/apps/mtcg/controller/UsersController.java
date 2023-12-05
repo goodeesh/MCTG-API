@@ -1,6 +1,5 @@
 package at.technikum.apps.mtcg.controller;
 
-import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.UserService;
@@ -143,10 +142,13 @@ public class UsersController implements Controller {
     } else {
       String taskJson = null;
       try {
-        taskJson = objectMapper.writeValueAsString(userOptional);
+        taskJson = objectMapper.writeValueAsString(userOptional.get());
         return new Response(HttpStatus.CREATED, taskJson);
       } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
+        return new Response(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Something went wrong"
+        );
       }
     }
   }
