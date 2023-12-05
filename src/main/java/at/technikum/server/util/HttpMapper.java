@@ -3,6 +3,9 @@ package at.technikum.server.util;
 import at.technikum.server.http.HttpMethod;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +15,7 @@ public class HttpMapper {
 
   public static Request toRequestObject(String httpRequest) {
     Request request = new Request();
+
     if (httpRequest.indexOf("Authorization:") != -1) {
       request.setAuthorization(
         httpRequest.substring(
@@ -24,7 +28,6 @@ public class HttpMapper {
     request.setRoute(getRoute(httpRequest));
     request.setHost(getHttpHeader("Host", httpRequest));
 
-    // THOUGHT: don't do the content parsing in this method
     String contentLengthHeader = getHttpHeader("Content-Length", httpRequest);
     if (null == contentLengthHeader) {
       return request;
@@ -37,9 +40,26 @@ public class HttpMapper {
       return request;
     }
 
-    request.setBody(
-      httpRequest.substring(httpRequest.length() - contentLength)
-    );
+    // Parse and convert keys in the body to lowercase
+    String body = httpRequest.substring(httpRequest.length() - contentLength);
+
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode tree = objectMapper.readTree(body);
+      ObjectNode newObject = objectMapper.createObjectNode();
+      // Iterate through the keys and values of the original JSON
+      tree
+        .fields()
+        .forEachRemaining(entry -> {
+          // Convert the key to lowercase and add it to the new JSON object
+          newObject.set(entry.getKey().toLowerCase(), entry.getValue());
+        });
+      String modifiedBody = objectMapper.writeValueAsString(newObject);
+      request.setBody(modifiedBody);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     return request;
   }
 
