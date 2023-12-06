@@ -17,7 +17,7 @@ tags:
   - name: trading
     description: Card trading
 paths:
-  /users:
+  /users: #all test passed
     post:
       tags:
         - users
@@ -34,7 +34,7 @@ paths:
           description: User successfully created
         '409':
           description: User with same username already registered
-  /users/{username}:
+  /users/{username}: #all test passed
     get:
       tags:
         - users
@@ -89,7 +89,7 @@ paths:
           description: User not found.
       security:
         - mtcgAuth: []
-  /sessions:
+  /sessions: #all test passed
     post:
       tags:
         - users
