@@ -26,6 +26,7 @@ public class PackageRepository {
     CardRepository cardRepository = new CardRepository();
     try {
       for (int i = 0; i < packageToCreate.getCards().length; i++) {
+        packageToCreate.getCards()[i].setOwnerUsername("admin");
         cardRepository.saveCard(packageToCreate.getCards()[i]);
       }
     } catch (Exception e) {
