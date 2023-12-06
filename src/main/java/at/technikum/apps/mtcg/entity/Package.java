@@ -4,12 +4,24 @@ public class Package {
 
   private Card[] cards;
   private String id;
-
-  public Package() {}
+  private int price;
 
   public Package(Card[] cards, String id) {
     this.cards = cards;
     this.id = id;
+    this.price = 15;
+  }
+
+  public Package() {
+    this.price = 15;
+  }
+
+  public int getPrice() {
+    return price;
+  }
+
+  public void setPrice(int price) {
+    this.price = price;
   }
 
   public Card[] getCards() {
