@@ -1,6 +1,8 @@
 package at.technikum.apps.mtcg.controller;
 
 import at.technikum.apps.mtcg.entity.Card;
+import at.technikum.apps.mtcg.entity.Package;
+import at.technikum.apps.mtcg.service.PackageService;
 import at.technikum.server.http.HttpContentType;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
@@ -9,6 +11,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PackagesController implements Controller {
+
+  private final PackageService packageService;
+
+  public PackagesController() {
+    this.packageService = new PackageService();
+  }
 
   @Override
   public boolean supports(String route) {
@@ -35,6 +43,9 @@ public class PackagesController implements Controller {
   }
 
   public Response create(Request request) {
+    if (
+      !request.getAuthorization().equals("Bearer admin-mtcgToken")
+    ) return new Response(HttpStatus.UNAUTHORIZED, "Unauthorized");
     ObjectMapper objectMapper = new ObjectMapper();
     Card[] cards = null;
     System.err.println(request.getBody());
@@ -43,8 +54,16 @@ public class PackagesController implements Controller {
     } catch (JsonProcessingException e) {
       return new Response(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
-    System.err.println(cards);
-    return new Response(HttpStatus.OK, "all good");
+    Package packageToCreate = new Package(cards, "admin");
+    try {
+      Package createdPackage = packageService.create(packageToCreate);
+      return new Response(
+        HttpStatus.CREATED,
+        objectMapper.writeValueAsString(createdPackage)
+      );
+    } catch (Exception e) {
+      return new Response(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
   }
   /* public Response create(Request request) {
     ObjectMapper objectMapper = new ObjectMapper();
