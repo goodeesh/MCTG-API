@@ -1,6 +1,5 @@
 package at.technikum.apps.mtcg.controller;
 
-import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.Session;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.service.SessionService;
@@ -80,8 +79,6 @@ public class SessionsController implements Controller {
       } catch (JsonProcessingException e) {
         throw new RuntimeException(e);
       }
-      Auth auth = getAuthInstance();
-      auth.setToken(session.getToken());
       return new Response(HttpStatus.OK, taskJson);
     }
   }

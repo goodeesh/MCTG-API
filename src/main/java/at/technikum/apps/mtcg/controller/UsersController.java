@@ -1,5 +1,6 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.UserService;
@@ -33,16 +34,8 @@ public class UsersController implements Controller {
     if (secondParameter.isEmpty()) { // no username set
       switch (request.getMethod()) {
         case "GET":
-          System.err.println(
-            "this is a get request in " + request.getRoute() + "... handling it"
-          );
           return findAll(request);
         case "POST":
-          System.err.println(
-            "this is a post request in " +
-            request.getRoute() +
-            "... handling it"
-          );
           return create(request);
         default:
           break;
@@ -51,14 +44,7 @@ public class UsersController implements Controller {
       String username = secondParameter.get();
       switch (request.getMethod()) {
         case "GET":
-          System.err.println(request.getBody());
-          System.err.println(
-            "this is a GET request in " +
-            request.getRoute() +
-            "... handling it for user " +
-            username
-          );
-          return find(username);
+          return find(request);
         case "PUT":
           System.err.println(
             "this is a PUT request in " +
@@ -132,22 +118,33 @@ public class UsersController implements Controller {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
-    Optional<User> userOptional = null;
-    userOptional = userService.save(user);
-    if (userOptional.isEmpty()) {
-      return new Response(
-        HttpStatus.CONFLICT,
-        "Username " + user.getUsername() + " is already in use"
-      );
-    } else {
-      String taskJson = null;
+    User userOptional = null;
+    try {
+      userOptional = userService.save(user);
       try {
-        taskJson = objectMapper.writeValueAsString(userOptional.get());
+        String taskJson = objectMapper.writeValueAsString(userOptional);
         return new Response(HttpStatus.CREATED, taskJson);
       } catch (JsonProcessingException e) {
         return new Response(
           HttpStatus.INTERNAL_SERVER_ERROR,
           "Something went wrong"
+        );
+      }
+    } catch (Exception e) {
+      if (e.getMessage().contains("Username is already in use")) {
+        return new Response(
+          HttpStatus.UNAUTHORIZED,
+          "Username is already in use"
+        );
+      } else if (e.getMessage().contains("Internal server error")) {
+        return new Response(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Internal server error"
+        );
+      } else {
+        return new Response(
+          HttpStatus.CONFLICT,
+          "Session could not be registered"
         );
       }
     }
@@ -167,30 +164,37 @@ public class UsersController implements Controller {
     return new Response(HttpStatus.OK, usersJson);
   }
 
-  public Response find(String username) {
+  public Response find(Request request) {
     ObjectMapper objectMapper = new ObjectMapper();
-    Optional<User> userOptional = null;
+    String username = Helper.getSecondParameterRoute(request.getRoute()).get();
+    String token = request.getAuthorization();
+    User userOptional = null;
     try {
-      userOptional = userService.find(username);
-    } catch (NumberFormatException e) {
-      throw new RuntimeException(e);
-    }
-    if (userOptional.isEmpty()) {
-      return new Response(
-        HttpStatus.NOT_FOUND,
-        "User " + username + " not found"
-      );
-    } else {
-      String userJson = null;
-      try {
-        userJson = objectMapper.writeValueAsString(userOptional.get());
-      } catch (JsonProcessingException e) {
+      userOptional = userService.find(username, token);
+    } catch (RuntimeException e) {
+      if (e.getMessage().contains("Not allowed to do this")) {
+        return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
+      } else if (e.getMessage().contains("Internal server error")) {
         return new Response(
           HttpStatus.INTERNAL_SERVER_ERROR,
-          "Something went wrong"
+          "Internal server error"
+        );
+      } else {
+        return new Response(
+          HttpStatus.CONFLICT,
+          "Session could not be registered"
         );
       }
-      return new Response(HttpStatus.OK, userJson);
     }
+    String userJson = null;
+    try {
+      userJson = objectMapper.writeValueAsString(userOptional);
+    } catch (JsonProcessingException e) {
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong"
+      );
+    }
+    return new Response(HttpStatus.OK, userJson);
   }
 }

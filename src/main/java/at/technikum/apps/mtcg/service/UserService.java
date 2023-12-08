@@ -1,13 +1,19 @@
 package at.technikum.apps.mtcg.service;
 
+import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class UserService {
 
   private final UserRepository UserRepository;
+
+  public UserService(UserRepository UserRepository) {
+    this.UserRepository = UserRepository;
+  }
 
   public UserService() {
     this.UserRepository = new UserRepository();
@@ -21,12 +27,21 @@ public class UserService {
     return Optional.empty();
   }
 
-  public Optional<User> save(User User) {
-    return UserRepository.save(User);
+  public User save(User user) {
+    user.setId(UUID.randomUUID().toString());
+    try {
+      return UserRepository.save(user);
+    } catch (Exception e) {
+      throw new RuntimeException("Something went wrong");
+    }
   }
 
-  public Optional<User> find(String username) {
-    return UserRepository.find(username);
+  public User find(String username, String token) {
+    Auth auth = new Auth();
+    if (auth.hasAccess(username, token).equals(true)) {
+      return UserRepository.find(username);
+    }
+    throw new RuntimeException("Not allowed to do this");
   }
 
   public Optional<User> update(
@@ -39,5 +54,10 @@ public class UserService {
 
   public User delete(User User) {
     return null;
+  }
+
+  public User test(User user) {
+    user.setId("testId");
+    return user;
   }
 }

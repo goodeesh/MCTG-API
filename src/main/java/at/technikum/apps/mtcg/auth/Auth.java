@@ -1,22 +1,19 @@
 package at.technikum.apps.mtcg.auth;
 
 public class Auth {
-    private static final Auth instance = new Auth();
-    private String token;
 
-    private Auth() {
-        // Private constructor to prevent external instantiation
+  public Boolean hasAccess(String username, String token) {
+    int start = token.indexOf("Bearer ") + "Bearer ".length();
+    int end = token.indexOf("-mtcgToken");
+    if (start == -1 || end == -1 || end < start) {
+      // handle error
     }
-
-    public static Auth getInstance() {
-        return instance;
+    String usernameFromToken = token.substring(start, end);
+    if (
+      username.equals(usernameFromToken) || usernameFromToken.equals("admin")
+    ) {
+      return true;
     }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-        return this.token;
-    }
+    return false;
+  }
 }

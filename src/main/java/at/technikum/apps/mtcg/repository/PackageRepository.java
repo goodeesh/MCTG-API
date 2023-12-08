@@ -47,21 +47,3 @@ public class PackageRepository {
     return packageToCreate;
   }
 }
-/* public Optional<User> save(User user) {
-    // use UUID to generate a unique id
-    user.setId(UUID.randomUUID().toString());
-    // save user to database
-    try (
-      Connection connection = database.getConnection();
-      PreparedStatement statement = connection.prepareStatement(SAVE_SQL);
-    ) {
-      statement.setString(1, user.getId());
-      statement.setString(2, user.getUsername());
-      statement.setString(3, user.getPassword());
-      statement.executeUpdate();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Optional.empty();
-    }
-    return Optional.of(user);
-  } */

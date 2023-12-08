@@ -51,9 +51,8 @@ public class UserRepository {
     }
   }
 
-  public Optional<User> find(String username) {
+  public User find(String username) {
     User user = null;
-    System.err.println("find user with username " + username);
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
@@ -70,12 +69,11 @@ public class UserRepository {
             resultSet.getString("password")
           );
       }
-      if (user != null) return Optional.ofNullable(
-        user
-      ); else return Optional.empty();
+      if (user != null) return user; else throw new RuntimeException(
+        "User not found"
+      );
     } catch (Exception e) {
-      e.printStackTrace();
-      return Optional.empty();
+      throw new RuntimeException("Something went wrong");
     }
   }
 
@@ -93,12 +91,10 @@ public class UserRepository {
     if (session.get().getExpires().before(now)) {
       throw new RuntimeException("Session expired");
     }
-    Optional<User> userToUpdate = find(usernameToUpdate);
-    if (userToUpdate.isEmpty()) {
+    try {
+      find(usernameToUpdate);
+    } catch (Exception e) {
       throw new RuntimeException("Something went wrong");
-    }
-    if (!userToUpdate.get().getUsername().equals(session.get().getUsername())) {
-      throw new RuntimeException("Not allowed to do this");
     }
     try {
       sessionRepository.delete(session.get().getUsername());
@@ -119,15 +115,12 @@ public class UserRepository {
       e.printStackTrace();
       return Optional.empty();
     }
-    User dbUser = find(updatedUser.getUsername()).get();
+    User dbUser = find(updatedUser.getUsername());
     sessionRepository.save(dbUser, Optional.ofNullable(token));
     return Optional.of(dbUser);
   }
 
-  public Optional<User> save(User user) {
-    // use UUID to generate a unique id
-    user.setId(UUID.randomUUID().toString());
-    // save user to database
+  public User save(User user) {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(SAVE_SQL);
@@ -137,10 +130,9 @@ public class UserRepository {
       statement.setString(3, user.getPassword());
       statement.executeUpdate();
     } catch (Exception e) {
-      e.printStackTrace();
-      return Optional.empty();
+      throw new RuntimeException("Something went wrong");
     }
-    return Optional.of(user);
+    return user;
   }
 
   public User delete(User user) {
