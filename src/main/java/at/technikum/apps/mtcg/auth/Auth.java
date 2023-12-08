@@ -6,7 +6,7 @@ public class Auth {
     int start = token.indexOf("Bearer ") + "Bearer ".length();
     int end = token.indexOf("-mtcgToken");
     if (start == -1 || end == -1 || end < start) {
-      // handle error
+      return false;
     }
     String usernameFromToken = token.substring(start, end);
     if (

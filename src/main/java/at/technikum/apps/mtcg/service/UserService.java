@@ -10,34 +10,37 @@ import java.util.UUID;
 public class UserService {
 
   private final UserRepository UserRepository;
+  private final Auth auth;
+
+  public UserService(UserRepository UserRepository, Auth auth) {
+    this.UserRepository = UserRepository;
+    this.auth = auth;
+  }
 
   public UserService(UserRepository UserRepository) {
     this.UserRepository = UserRepository;
+    this.auth = new Auth();
   }
 
   public UserService() {
     this.UserRepository = new UserRepository();
+    this.auth = new Auth();
   }
 
   public List<User> findAll() {
     return UserRepository.findAll();
   }
 
-  public Optional<User> find(int id) {
-    return Optional.empty();
-  }
-
   public User save(User user) {
     user.setId(UUID.randomUUID().toString());
     if (
-      UserRepository.find(user.getUsername()).isPresent()
+      !UserRepository.find(user.getUsername()).isPresent()
     ) return UserRepository.save(user); else throw new RuntimeException(
       "Username already exists"
     );
   }
 
   public User find(String username, String token) {
-    Auth auth = new Auth();
     if (auth.hasAccess(username, token).equals(true)) {
       Optional<User> user = UserRepository.find(username);
       if (user.isPresent()) return user.get(); else throw new RuntimeException(
@@ -47,19 +50,11 @@ public class UserService {
     throw new RuntimeException("Not allowed to do this");
   }
 
-  /*   public Optional<User> update(
-  String usernameToUpdate,
-  User updatedUser,
-  String token
-) {
-  return UserRepository.update(usernameToUpdate, updatedUser, token);
-} */
   public Optional<User> update(
     String usernameToUpdate,
     User updatedUser,
     String token
   ) {
-    Auth auth = new Auth();
     if (auth.hasAccess(usernameToUpdate, token).equals(true)) {
       Optional<User> user = UserRepository.find(usernameToUpdate);
       if (user.isPresent()) return UserRepository.update(
@@ -69,14 +64,5 @@ public class UserService {
       ); else throw new RuntimeException("User not found");
     }
     throw new RuntimeException("Not allowed to do this");
-  }
-
-  public User delete(User User) {
-    return null;
-  }
-
-  public User test(User user) {
-    user.setId("testId");
-    return user;
   }
 }
