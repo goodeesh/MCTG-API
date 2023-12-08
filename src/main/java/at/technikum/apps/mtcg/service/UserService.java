@@ -39,7 +39,10 @@ public class UserService {
   public User find(String username, String token) {
     Auth auth = new Auth();
     if (auth.hasAccess(username, token).equals(true)) {
-      return UserRepository.find(username).get();
+      Optional<User> user = UserRepository.find(username);
+      if (user.isPresent()) return user.get(); else throw new RuntimeException(
+        "User not found"
+      );
     }
     throw new RuntimeException("Not allowed to do this");
   }

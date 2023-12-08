@@ -169,15 +169,12 @@ public class UsersController implements Controller {
     } catch (RuntimeException e) {
       if (e.getMessage().contains("Not allowed to do this")) {
         return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
-      } else if (e.getMessage().contains("Internal server error")) {
-        return new Response(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          "Internal server error"
-        );
+      } else if (e.getMessage().contains("User not found")) {
+        return new Response(HttpStatus.NOT_FOUND, "User not found");
       } else {
         return new Response(
-          HttpStatus.CONFLICT,
-          "Session could not be registered"
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Something went wrong"
         );
       }
     }
