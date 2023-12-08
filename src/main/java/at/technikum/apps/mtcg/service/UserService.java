@@ -47,12 +47,28 @@ public class UserService {
     throw new RuntimeException("Not allowed to do this");
   }
 
+  /*   public Optional<User> update(
+  String usernameToUpdate,
+  User updatedUser,
+  String token
+) {
+  return UserRepository.update(usernameToUpdate, updatedUser, token);
+} */
   public Optional<User> update(
     String usernameToUpdate,
     User updatedUser,
     String token
   ) {
-    return UserRepository.update(usernameToUpdate, updatedUser, token);
+    Auth auth = new Auth();
+    if (auth.hasAccess(usernameToUpdate, token).equals(true)) {
+      Optional<User> user = UserRepository.find(usernameToUpdate);
+      if (user.isPresent()) return UserRepository.update(
+        usernameToUpdate,
+        updatedUser,
+        token
+      ); else throw new RuntimeException("User not found");
+    }
+    throw new RuntimeException("Not allowed to do this");
   }
 
   public User delete(User User) {

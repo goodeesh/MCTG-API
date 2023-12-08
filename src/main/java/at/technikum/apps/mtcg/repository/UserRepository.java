@@ -81,22 +81,8 @@ public class UserRepository {
     User updatedUser,
     String token
   ) {
-    SessionRepository sessionRepository = new SessionRepository();
-    Optional<Session> session = sessionRepository.findByToken(token);
-    if (session.isEmpty()) {
-      throw new RuntimeException("Session not found");
-    }
-    Timestamp now = Timestamp.from(Instant.now());
-    if (session.get().getExpires().before(now)) {
-      throw new RuntimeException("Session expired");
-    }
     try {
       find(usernameToUpdate);
-    } catch (Exception e) {
-      throw new RuntimeException("Something went wrong");
-    }
-    try {
-      sessionRepository.delete(session.get().getUsername());
     } catch (Exception e) {
       throw new RuntimeException("Something went wrong");
     }
@@ -115,7 +101,6 @@ public class UserRepository {
       return Optional.empty();
     }
     Optional<User> dbUser = find(updatedUser.getUsername());
-    sessionRepository.save(dbUser.get(), Optional.ofNullable(token));
     return dbUser;
   }
 

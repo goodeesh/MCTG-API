@@ -45,12 +45,6 @@ public class UsersController implements Controller {
         case "GET":
           return find(request);
         case "PUT":
-          System.err.println(
-            "this is a PUT request in " +
-            request.getRoute() +
-            "... handling it for user " +
-            username
-          );
           return update(username, request);
         default:
           break;
@@ -63,16 +57,9 @@ public class UsersController implements Controller {
   }
 
   public Response update(String usernameToUpdate, Request request) {
-    System.err.println(
-      "this is the Authorization token: " + request.getAuthorization()
-    );
     ObjectMapper objectMapper = new ObjectMapper();
     User user = null;
     String authorizationToken = request.getAuthorization();
-    System.err.println(authorizationToken);
-    if (authorizationToken == "") {
-      return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
-    }
     try {
       user = objectMapper.readValue(request.getBody(), User.class);
     } catch (JsonProcessingException e) {
@@ -82,18 +69,11 @@ public class UsersController implements Controller {
     try {
       userOptional =
         userService.update(usernameToUpdate, user, authorizationToken);
-    } catch (NumberFormatException e) {
-      if (
-        e.getMessage().equals("Session not found") ||
-        e.getMessage().equals("Session expired") ||
-        e.getMessage().equals("Not allowed to do this")
-      ) {
+    } catch (RuntimeException e) {
+      if (e.getMessage().equals("Not allowed to do this")) {
         return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
-      } else if (e.getMessage().equals("Something went wrong")) {
-        return new Response(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          "Something went wrong"
-        );
+      } else if (e.getMessage().equals("User not found")) {
+        return new Response(HttpStatus.NOT_FOUND, "User not found");
       } else {
         return new Response(
           HttpStatus.INTERNAL_SERVER_ERROR,
