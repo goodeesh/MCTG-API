@@ -29,17 +29,17 @@ public class UserService {
 
   public User save(User user) {
     user.setId(UUID.randomUUID().toString());
-    try {
-      return UserRepository.save(user);
-    } catch (Exception e) {
-      throw new RuntimeException("Something went wrong");
-    }
+    if (
+      UserRepository.find(user.getUsername()).isPresent()
+    ) return UserRepository.save(user); else throw new RuntimeException(
+      "Username already exists"
+    );
   }
 
   public User find(String username, String token) {
     Auth auth = new Auth();
     if (auth.hasAccess(username, token).equals(true)) {
-      return UserRepository.find(username);
+      return UserRepository.find(username).get();
     }
     throw new RuntimeException("Not allowed to do this");
   }

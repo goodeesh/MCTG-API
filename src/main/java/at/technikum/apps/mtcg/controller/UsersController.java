@@ -1,6 +1,5 @@
 package at.technikum.apps.mtcg.controller;
 
-import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.User;
 import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.UserService;
@@ -111,6 +110,7 @@ public class UsersController implements Controller {
   }
 
   public Response create(Request request) {
+    //create User Object from request
     ObjectMapper objectMapper = new ObjectMapper();
     User user = null;
     try {
@@ -118,6 +118,8 @@ public class UsersController implements Controller {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+    ///////////////////////////////////////
+    //save user into database
     User userOptional = null;
     try {
       userOptional = userService.save(user);
@@ -130,21 +132,14 @@ public class UsersController implements Controller {
           "Something went wrong"
         );
       }
-    } catch (Exception e) {
-      if (e.getMessage().contains("Username is already in use")) {
-        return new Response(
-          HttpStatus.UNAUTHORIZED,
-          "Username is already in use"
-        );
-      } else if (e.getMessage().contains("Internal server error")) {
+    } catch (RuntimeException e) {
+      System.err.println(e.getMessage());
+      if (e.getMessage().equals("Username already exists")) {
+        return new Response(HttpStatus.CONFLICT, "Username is already in use");
+      } else {
         return new Response(
           HttpStatus.INTERNAL_SERVER_ERROR,
           "Internal server error"
-        );
-      } else {
-        return new Response(
-          HttpStatus.CONFLICT,
-          "Session could not be registered"
         );
       }
     }

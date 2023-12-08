@@ -94,7 +94,7 @@ public class SessionRepository {
   public Optional<Session> save(User user, Optional<String> token) {
     // save session to database
     UserRepository userRepository = new UserRepository();
-    User userOptional = null;
+    Optional<User> userOptional = null;
     try {
       userOptional = userRepository.find(user.getUsername());
     } catch (Exception e) {
@@ -102,13 +102,13 @@ public class SessionRepository {
       return Optional.empty();
     }
 
-    if (!userOptional.getPassword().equals(user.getPassword())) {
+    if (!userOptional.get().getPassword().equals(user.getPassword())) {
       throw new RuntimeException("Invalid username/password provided");
     }
     if (find(user.getUsername()).isPresent()) {
       delete(user.getUsername());
     }
-    Session session = new Session(userOptional.getUsername());
+    Session session = new Session(userOptional.get().getUsername());
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(SAVE_SQL);

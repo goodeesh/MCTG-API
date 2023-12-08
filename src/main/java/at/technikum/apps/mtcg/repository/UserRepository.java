@@ -11,7 +11,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class UserRepository {
 
@@ -51,7 +50,7 @@ public class UserRepository {
     }
   }
 
-  public User find(String username) {
+  public Optional<User> find(String username) {
     User user = null;
     try (
       Connection connection = database.getConnection();
@@ -69,9 +68,9 @@ public class UserRepository {
             resultSet.getString("password")
           );
       }
-      if (user != null) return user; else throw new RuntimeException(
-        "User not found"
-      );
+      if (user != null) return Optional.ofNullable(
+        user
+      ); else return Optional.empty();
     } catch (Exception e) {
       throw new RuntimeException("Something went wrong");
     }
@@ -115,9 +114,9 @@ public class UserRepository {
       e.printStackTrace();
       return Optional.empty();
     }
-    User dbUser = find(updatedUser.getUsername());
-    sessionRepository.save(dbUser, Optional.ofNullable(token));
-    return Optional.of(dbUser);
+    Optional<User> dbUser = find(updatedUser.getUsername());
+    sessionRepository.save(dbUser.get(), Optional.ofNullable(token));
+    return dbUser;
   }
 
   public User save(User user) {
