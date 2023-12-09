@@ -88,7 +88,13 @@ compile_project() {
 watch_changes() {
     echo "Watching directory: $WATCH_DIR"
     while true; do
-        new_timestamp=$(find $WATCH_DIR -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d" ")
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS's stat command syntax
+            new_timestamp=$(find $WATCH_DIR -type f -exec stat -f "%m%t%N" {} + | sort -n | tail -1 | cut -f1)
+        else
+            # Linux's find command with -printf option
+            new_timestamp=$(find $WATCH_DIR -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d" ")
+        fi
         if [[ "$new_timestamp" != "$timestamp" ]]; then
             timestamp=$new_timestamp
             compile_project
