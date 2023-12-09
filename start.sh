@@ -14,9 +14,23 @@ export_database() {
 }
 
 import_database() {
-    echo "Importing database..."
-    docker exec -i mtcgdb psql -U postgres mydb < $DB_BACKUP
-    echo "Database imported."
+    if [[ -f $DB_BACKUP ]]; then
+        echo "Backup file found. Proceeding with database import."
+
+        echo "Dropping existing database mydb..."
+        docker exec mtcgdb psql -U postgres -c "DROP DATABASE IF EXISTS mydb;"
+        echo "Database mydb dropped."
+
+        echo "Creating new database mydb..."
+        docker exec mtcgdb psql -U postgres -c "CREATE DATABASE mydb;"
+        echo "Database mydb created."
+
+        echo "Importing database..."
+        docker exec -i mtcgdb psql -U postgres mydb < $DB_BACKUP
+        echo "Database imported."
+    else
+        echo "Backup file $DB_BACKUP not found. Aborting import."
+    fi
 }
 
 cleanup() {
@@ -87,9 +101,9 @@ start_database() {
     echo "Starting PostgreSQL database..."
     docker start mtcgdb
     docker exec mtcgdb psql -U postgres -d mydb -c '\l'
-    import_database
     echo "Database started."
 }
 
 start_database
+import_database
 watch_changes
