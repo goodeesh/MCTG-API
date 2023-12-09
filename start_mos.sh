@@ -4,9 +4,20 @@
 WATCH_DIR=src
 SERVER_JAR=target/server-application-1.0-SNAPSHOT.jar
 SERVER_PID=
+DB_BACKUP="backup.sql"
 
 trap cleanup INT
+export_database() {
+    echo "Exporting database..."
+    docker exec mtcgdb pg_dump -U postgres mydb > $DB_BACKUP
+    echo "Database exported to $DB_BACKUP."
+}
 
+import_database() {
+    echo "Importing database..."
+    docker exec -i mtcgdb psql -U postgres mydb < $DB_BACKUP
+    echo "Database imported."
+}
 cleanup() {
     echo "Stopping server and database..."
     if [[ -n "$SERVER_PID" ]]; then
