@@ -8,9 +8,14 @@ DB_BACKUP="backup.sql"
 
 trap cleanup INT
 export_database() {
-    echo "Exporting database..."
-    docker exec mtcgdb pg_dump -U postgres mydb > $DB_BACKUP
-    echo "Database exported to $DB_BACKUP."
+    echo "Checking if the database container is running..."
+    if [[ $(docker ps --filter name=mtcgdb --format '{{.Names}}') == "mtcgdb" ]]; then
+        echo "Container is running. Exporting database..."
+        docker exec mtcgdb pg_dump -U postgres mydb > $DB_BACKUP
+        echo "Database exported to $DB_BACKUP."
+    else
+        echo "Database container is not running. Skipping backup."
+    fi
 }
 
 import_database() {
