@@ -16,4 +16,13 @@ public class Auth {
     }
     return false;
   }
+
+  public String extractUsernameFromToken(String token) {
+    int start = token.indexOf("Bearer ") + "Bearer ".length();
+    int end = token.indexOf("-mtcgToken");
+    if (start == -1 || end == -1 || end < start) {
+      return null;
+    }
+    return token.substring(start, end);
+  }
 }

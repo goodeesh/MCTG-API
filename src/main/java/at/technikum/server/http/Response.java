@@ -60,6 +60,12 @@ public class Response {
         this.contentType = (HttpContentType.TEXT_PLAIN).getMimeType();
         this.body = taskJson;
         break;
+      case FORBIDDEN:
+        this.statusCode = 403;
+        this.statusMessage = "Forbidden";
+        this.contentType = (HttpContentType.TEXT_PLAIN).getMimeType();
+        this.body = taskJson;
+        break;
       default:
         break;
     }

@@ -124,4 +124,44 @@ public class UserRepository {
     // Delete the user and return the deleted user
     return null;
   }
+
+  public int getMoney(String username) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT money FROM users WHERE username = ?"
+      );
+    ) {
+      statement.setString(1, username);
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        return resultSet.getInt("money");
+      }
+      return 0;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return 0;
+    }
+  }
+
+  public boolean updateMoney(String username, int money) {
+    int moneyBefore = getMoney(username);
+    int moneyAfter = moneyBefore - money;
+    if (moneyAfter < 0) {
+      return false;
+    }
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "UPDATE users SET money = ? WHERE username = ?"
+      );
+    ) {
+      statement.setInt(1, moneyAfter);
+      statement.setString(2, username);
+      statement.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return true;
+  }
 }

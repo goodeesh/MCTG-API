@@ -112,7 +112,7 @@ paths:
                 type: string
                 description: The token for authenticated users.
                 example: kienboec-mtcgToken
-  /packages:
+  /packages: #all works 
     post:
       tags:
         - packages
@@ -139,7 +139,7 @@ paths:
           description: At least one card in the packages already exists
       security:
         - mtcgAuth: []
-  /transactions/packages:
+  /transactions/packages: 
     post:
       tags:
         - packages
