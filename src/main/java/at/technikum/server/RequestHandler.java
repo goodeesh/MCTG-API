@@ -39,7 +39,6 @@ public class RequestHandler implements Runnable {
 
     String httpRequest = getHttpStringFromStream(in);
     Request request = HttpMapper.toRequestObject(httpRequest);
-    System.err.println(request.getBody());
     Response response = app.handle(request);
 
     out = new PrintWriter(client.getOutputStream(), true);
