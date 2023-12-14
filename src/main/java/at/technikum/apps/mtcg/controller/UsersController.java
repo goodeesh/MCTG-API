@@ -28,8 +28,6 @@ public class UsersController implements Controller {
     String route = request.getRoute();
     new Helper();
     Optional<String> secondParameter = Helper.getSecondParameterRoute(route);
-    Integer positionOfSecondSlash = route.indexOf("/", 1);
-    System.err.println(positionOfSecondSlash);
     if (secondParameter.isEmpty()) { // no username set
       switch (request.getMethod()) {
         case "GET":

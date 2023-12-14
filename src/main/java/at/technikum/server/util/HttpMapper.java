@@ -66,10 +66,10 @@ public class HttpMapper {
   public static Request toRequestObject(String httpRequest) {
     Request request = new Request();
 
-    if (httpRequest.indexOf("Authorization:") != -1) {
+    if (httpRequest.indexOf("authorization:") != -1) {
       request.setAuthorization(
         httpRequest.substring(
-          httpRequest.indexOf("Authorization:") + 15,
+          httpRequest.indexOf("authorization:") + 15,
           httpRequest.indexOf("mtcgToken") + 9
         )
       );

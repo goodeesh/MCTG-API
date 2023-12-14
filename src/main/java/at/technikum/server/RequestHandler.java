@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RequestHandler {
+public class RequestHandler implements Runnable {
 
   private BufferedReader in;
   private PrintWriter out;
@@ -25,12 +25,20 @@ public class RequestHandler {
     this.app = app;
   }
 
+  @Override
+  public void run() {
+    try {
+      handle();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   public void handle() throws IOException {
     in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
     String httpRequest = getHttpStringFromStream(in);
     Request request = HttpMapper.toRequestObject(httpRequest);
-    System.err.println(request.getBody());
     Response response = app.handle(request);
 
     out = new PrintWriter(client.getOutputStream(), true);
