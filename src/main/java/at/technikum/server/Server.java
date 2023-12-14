@@ -6,32 +6,31 @@ import java.net.Socket;
 
 public class Server {
 
-    private ServerSocket server;
+  private ServerSocket server;
 
-    private final ServerApplication app;
+  private final ServerApplication app;
 
-    public Server(ServerApplication app) {
-        this.app = app;
+  public Server(ServerApplication app) {
+    this.app = app;
+  }
+
+  public void start() throws IOException {
+    try {
+      server = new ServerSocket(10001);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
 
-    public void start() throws IOException {
-        try {
-            server = new ServerSocket(10001);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    System.out.println("Server started on http://localhost:10001");
 
-        System.out.println("Server started on http://localhost:10001");
+    while (true) try {
+      Socket socket = server.accept();
 
-        while (true)
-            try {
-                Socket socket = server.accept();
-
-                RequestHandler handler = new RequestHandler(socket, app);
-                handler.handle();
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+      RequestHandler handler = new RequestHandler(socket, app);
+      Thread thread = new Thread(handler);
+      thread.start();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 }
