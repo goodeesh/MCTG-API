@@ -24,6 +24,13 @@ public class HttpMapper {
           httpRequest.indexOf("mtcgToken") + 9
         )
       );
+    } else if (httpRequest.indexOf("Authorization:") != -1) {
+      request.setAuthorization(
+        httpRequest.substring(
+          httpRequest.indexOf("Authorization:") + 15,
+          httpRequest.indexOf("mtcgToken") + 9
+        )
+      );
     }
     request.setMethod(getHttpMethod(httpRequest));
     request.setRoute(getRoute(httpRequest));
@@ -46,20 +53,22 @@ public class HttpMapper {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode tree = objectMapper.readTree(body);
-
       if (tree.isArray()) {
         ArrayNode newArray = objectMapper.createArrayNode();
-
         for (JsonNode element : tree) {
-          ObjectNode newObj = objectMapper.createObjectNode();
-          element
-            .fields()
-            .forEachRemaining(entry -> {
-              newObj.set(entry.getKey().toLowerCase(), entry.getValue());
-            });
-          newArray.add(newObj);
+          if (element.isObject()) {
+            ObjectNode newObj = objectMapper.createObjectNode();
+            element
+              .fields()
+              .forEachRemaining(entry -> {
+                newObj.set(entry.getKey().toLowerCase(), entry.getValue());
+              });
+            newArray.add(newObj);
+          } else if (element.isTextual()) {
+            // If it's a text, just add it as is (or you can do something else)
+            newArray.add(element.asText().toLowerCase());
+          }
         }
-
         String modifiedBody = objectMapper.writeValueAsString(newArray);
         request.setBody(modifiedBody);
       } else {

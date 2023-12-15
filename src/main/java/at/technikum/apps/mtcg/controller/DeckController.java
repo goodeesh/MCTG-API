@@ -2,6 +2,7 @@ package at.technikum.apps.mtcg.controller;
 
 import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.Card;
+import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.DeckService;
 import at.technikum.server.http.HttpContentType;
 import at.technikum.server.http.HttpStatus;
@@ -73,6 +74,40 @@ public class DeckController implements Controller {
   }
 
   private final Response changueDeck(Request request) {
-    return new Response(HttpStatus.OK, "change deck");
+    Helper helper = new Helper();
+    System.err.println(request.getBody());
+    String[] cardsIds = helper.transformStringtoStringArray(request.getBody());
+    String authToken = request.getAuthorization();
+    String username = new Auth().extractUsernameFromToken(authToken);
+    DeckService deckService = new DeckService();
+    String cardsJson = null;
+    List<Card> cards = null;
+    try {
+      cards = deckService.changueDeck(cardsIds, username, authToken);
+      System.err.println(cards);
+    } catch (RuntimeException e) {
+      if (e.getMessage().contains("Not allowed to do this")) {
+        return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
+      } else if (e.getMessage().contains("User not found")) {
+        return new Response(HttpStatus.NOT_FOUND, "User not found");
+      } else if (e.getMessage().contains("Bad request")) {
+        return new Response(HttpStatus.BAD_REQUEST, "Card not found");
+      } else {
+        return new Response(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Something went wrong"
+        );
+      }
+    }
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      cardsJson = objectMapper.writeValueAsString(cards);
+    } catch (Exception e) {
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong"
+      );
+    }
+    return new Response(HttpStatus.OK, cardsJson);
   }
 }

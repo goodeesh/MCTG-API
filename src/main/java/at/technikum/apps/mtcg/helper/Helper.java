@@ -13,4 +13,19 @@ public class Helper {
     }
     return secondParameter;
   }
+
+  public final String[] transformStringtoStringArray(String string) {
+    String[] cardsIds = string.split(",");
+    for (int i = 0; i < cardsIds.length; i++) {
+      if (i == 0) {
+        cardsIds[i] = cardsIds[i].substring(2, cardsIds[i].length() - 1);
+      } else if (i == cardsIds.length - 1) {
+        cardsIds[i] = cardsIds[i].substring(1, cardsIds[i].length() - 2);
+      } else {
+        cardsIds[i] = cardsIds[i].substring(1, cardsIds[i].length() - 1);
+      }
+      System.err.println(cardsIds[i]);
+    }
+    return cardsIds;
+  }
 }

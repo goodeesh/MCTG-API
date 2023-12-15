@@ -12,7 +12,7 @@ public class CardRepository {
 
   private final Database database;
   private final String SAVE_SQL =
-    "INSERT INTO cards(id, name, damage, owner, inDeck) VALUES(?,?,?,?,?)";
+    "INSERT INTO cards(id, name, damage, owner, indeck) VALUES(?,?,?,?,?)";
   private final String CHANGE_OWNER_SQL =
     "UPDATE cards SET owner = ? WHERE id = ?";
 
@@ -41,7 +41,7 @@ public class CardRepository {
         card.setName(resultSet.getString("name"));
         card.setDamage(resultSet.getInt("damage"));
         card.setOwnerUsername(resultSet.getString("owner"));
-        card.setInDeck(resultSet.getBoolean("inDeck"));
+        card.setInDeck(resultSet.getBoolean("indeck"));
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -102,7 +102,7 @@ public class CardRepository {
         card.setName(resultSet.getString("name"));
         card.setDamage(resultSet.getInt("damage"));
         card.setOwnerUsername(resultSet.getString("owner"));
-        card.setInDeck(resultSet.getBoolean("inDeck"));
+        card.setInDeck(resultSet.getBoolean("indeck"));
         cards.add(card);
       }
     } catch (Exception e) {
@@ -116,7 +116,7 @@ public class CardRepository {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "SELECT * FROM cards WHERE owner = ? AND inDeck = ?"
+        "SELECT * FROM cards WHERE owner = ? AND indeck = ?"
       )
     ) {
       statement.setString(1, username);
@@ -128,12 +128,43 @@ public class CardRepository {
         card.setName(resultSet.getString("name"));
         card.setDamage(resultSet.getInt("damage"));
         card.setOwnerUsername(resultSet.getString("owner"));
-        card.setInDeck(resultSet.getBoolean("inDeck"));
+        card.setInDeck(resultSet.getBoolean("indeck"));
         cards.add(card);
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
     return cards;
+  }
+
+  public boolean setCardsInDeckToTrue(String username, String[] cardsIds) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "UPDATE cards SET indeck = ? WHERE owner = ?"
+      )
+    ) {
+      statement.setBoolean(1, false);
+      statement.setString(2, username);
+      statement.executeUpdate();
+      try (
+        PreparedStatement statement2 = connection.prepareStatement(
+          "UPDATE cards SET indeck = ? WHERE id = ?"
+        );
+      ) {
+        Thread.sleep(1000);
+        for (String cardId : cardsIds) {
+          System.err.println("trying to set card " + cardId + " to true");
+          statement2.setBoolean(1, true);
+          statement2.setString(2, cardId);
+          statement2.executeUpdate();
+        }
+      } catch (InterruptedException e) {
+        return false;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
   }
 }

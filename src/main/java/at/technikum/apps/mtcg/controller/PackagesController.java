@@ -43,12 +43,12 @@ public class PackagesController implements Controller {
   }
 
   public Response create(Request request) {
+    System.err.println("create package: " + request.getAuthorization());
     if (
       !request.getAuthorization().equals("Bearer admin-mtcgToken")
     ) return new Response(HttpStatus.UNAUTHORIZED, "Unauthorized");
     ObjectMapper objectMapper = new ObjectMapper();
     Card[] cards = null;
-    System.err.println(request.getBody());
     try {
       cards = objectMapper.readValue(request.getBody(), Card[].class);
     } catch (JsonProcessingException e) {
