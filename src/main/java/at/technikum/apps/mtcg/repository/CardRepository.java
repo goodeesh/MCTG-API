@@ -110,4 +110,30 @@ public class CardRepository {
     }
     return cards;
   }
+
+  public List<Card> getCardsFromUserWhereInDeckTrue(String username) {
+    List<Card> cards = new ArrayList<>();
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT * FROM cards WHERE owner = ? AND inDeck = ?"
+      )
+    ) {
+      statement.setString(1, username);
+      statement.setBoolean(2, true);
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        Card card = new Card();
+        card.setId(resultSet.getString("id"));
+        card.setName(resultSet.getString("name"));
+        card.setDamage(resultSet.getInt("damage"));
+        card.setOwnerUsername(resultSet.getString("owner"));
+        card.setInDeck(resultSet.getBoolean("inDeck"));
+        cards.add(card);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return cards;
+  }
 }

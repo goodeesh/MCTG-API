@@ -1,7 +1,6 @@
 package at.technikum.apps.mtcg.controller;
 
 import at.technikum.apps.mtcg.auth.Auth;
-import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.TransactionService;
 import at.technikum.server.http.HttpContentType;
 import at.technikum.server.http.HttpStatus;

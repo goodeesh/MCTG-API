@@ -130,9 +130,9 @@ bb8135f0-4cf5-4ae6-8ea4-e99aff5877a4	b2237eca-0271-43bd-87f6-b22f70d42ca4,9e8238
 --
 
 COPY public.sessions (id, token, username, created, expires) FROM stdin;
-cc91442e-c59b-4a6e-9c6e-a8caf650fb17	Bearer kienboec-mtcgToken	kienboec	2023-12-12 23:13:24.484625+01	2023-12-13 23:13:24.485003+01
-9d4a73b5-4546-4c7a-b79a-2b796834cab7	Bearer altenhof-mtcgToken	altenhof	2023-12-12 23:13:24.567062+01	2023-12-13 23:13:24.56707+01
-b2235f79-29bc-4c28-bece-e66f70d46bc0	Bearer admin-mtcgToken	admin	2023-12-12 23:13:24.628006+01	2023-12-13 23:13:24.628014+01
+31cab433-bf79-4d7a-903c-aa3eb96209be	Bearer kienboec-mtcgToken	kienboec	2023-12-14 15:53:30.746572+01	2023-12-15 15:53:30.746585+01
+0ca00ef7-3a37-4728-8745-32ade75c7981	Bearer altenhof-mtcgToken	altenhof	2023-12-14 15:53:30.923405+01	2023-12-15 15:53:30.923418+01
+d8d21314-34b1-48ab-bc27-c8d00afb1492	Bearer admin-mtcgToken	admin	2023-12-14 15:53:31.042516+01	2023-12-15 15:53:31.042529+01
 \.
 
 

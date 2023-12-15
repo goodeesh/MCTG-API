@@ -53,6 +53,9 @@ public class CardsController implements Controller {
         );
       }
     }
+    if (cards.isEmpty()) {
+      return new Response(HttpStatus.NO_CONTENT, "No cards found");
+    }
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return new Response(

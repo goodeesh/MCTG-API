@@ -14,55 +14,6 @@ import java.util.regex.Pattern;
 // THOUGHT: Dont use static methods (non-static is better for testing)
 public class HttpMapper {
 
-  /* public static Request toRequestObject(String httpRequest) {
-    Request request = new Request();
-  
-    if (httpRequest.indexOf("Authorization:") != -1) {
-      request.setAuthorization(
-        httpRequest.substring(
-          httpRequest.indexOf("Authorization:") + 15,
-          httpRequest.indexOf("mtcgToken") + 9
-        )
-      );
-    }
-    request.setMethod(getHttpMethod(httpRequest));
-    request.setRoute(getRoute(httpRequest));
-    request.setHost(getHttpHeader("Host", httpRequest));
-  
-    String contentLengthHeader = getHttpHeader("Content-Length", httpRequest);
-    if (null == contentLengthHeader) {
-      return request;
-    }
-  
-    int contentLength = Integer.parseInt(contentLengthHeader);
-    request.setContentLength(contentLength);
-  
-    if (0 == contentLength) {
-      return request;
-    }
-  
-    // Parse and convert keys in the body to lowercase
-    String body = httpRequest.substring(httpRequest.length() - contentLength);
-  
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      JsonNode tree = objectMapper.readTree(body);
-      ObjectNode newObject = objectMapper.createObjectNode();
-      // Iterate through the keys and values of the original JSON
-      tree
-        .fields()
-        .forEachRemaining(entry -> {
-          // Convert the key to lowercase and add it to the new JSON object
-          newObject.set(entry.getKey().toLowerCase(), entry.getValue());
-        });
-      String modifiedBody = objectMapper.writeValueAsString(newObject);
-      request.setBody(modifiedBody);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  
-    return request;
-  } */
   public static Request toRequestObject(String httpRequest) {
     Request request = new Request();
 

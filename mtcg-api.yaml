@@ -179,7 +179,7 @@ paths:
                   $ref: '#/components/schemas/Card'
         '204':
           description: The request was fine, but the user doesn't have any cards
-        '401':
+        '401':l
           $ref: '#/components/responses/UnauthorizedError'
       security:
         - mtcgAuth: []

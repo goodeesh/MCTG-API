@@ -66,6 +66,11 @@ public class Response {
         this.contentType = (HttpContentType.TEXT_PLAIN).getMimeType();
         this.body = taskJson;
         break;
+      case NO_CONTENT:
+        this.statusCode = 204;
+        this.statusMessage = "No Content";
+        this.contentType = (HttpContentType.TEXT_PLAIN).getMimeType();
+        this.body = taskJson;
       default:
         break;
     }
