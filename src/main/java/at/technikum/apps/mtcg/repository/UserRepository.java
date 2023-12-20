@@ -65,7 +65,11 @@ public class UserRepository {
           new User(
             resultSet.getString("id"),
             resultSet.getString("username"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            resultSet.getInt("money"),
+            resultSet.getString("name"),
+            resultSet.getString("bio"),
+            resultSet.getString("image")
           );
       }
       if (user != null) return Optional.ofNullable(
@@ -76,25 +80,20 @@ public class UserRepository {
     }
   }
 
-  public Optional<User> update(
-    String usernameToUpdate,
-    User updatedUser,
-    String token
-  ) {
-    try {
-      find(usernameToUpdate);
-    } catch (Exception e) {
-      throw new RuntimeException("Something went wrong");
-    }
+  public Optional<User> update(String usernameToUpdate, User updatedUser) {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "UPDATE users SET username = ?, password = ? WHERE username = ?"
+        "UPDATE users SET username = ?, password = ?, money = ?, name = ?, bio = ?, image = ? WHERE username = ?"
       );
     ) {
       statement.setString(1, updatedUser.getUsername());
       statement.setString(2, updatedUser.getPassword());
-      statement.setString(3, usernameToUpdate);
+      statement.setInt(3, updatedUser.getMoney());
+      statement.setString(4, updatedUser.getName());
+      statement.setString(5, updatedUser.getBio());
+      statement.setString(6, updatedUser.getImage());
+      statement.setString(7, usernameToUpdate);
       statement.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();

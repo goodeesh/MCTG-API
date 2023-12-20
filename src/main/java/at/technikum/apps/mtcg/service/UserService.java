@@ -57,11 +57,30 @@ public class UserService {
   ) {
     if (auth.hasAccess(usernameToUpdate, token).equals(true)) {
       Optional<User> user = UserRepository.find(usernameToUpdate);
-      if (user.isPresent()) return UserRepository.update(
-        usernameToUpdate,
-        updatedUser,
-        token
-      ); else throw new RuntimeException("User not found");
+      if (user.isPresent()) {
+        if (updatedUser.getId() == null) updatedUser.setId(user.get().getId());
+        if (updatedUser.getUsername() == null) updatedUser.setUsername(
+          user.get().getUsername()
+        );
+        if (updatedUser.getPassword() == null) updatedUser.setPassword(
+          user.get().getPassword()
+        );
+
+        if (updatedUser.getMoney() == null) updatedUser.setMoney(
+          user.get().getMoney()
+        );
+        if (updatedUser.getName() == null) updatedUser.setName(
+          user.get().getName()
+        );
+
+        if (updatedUser.getBio() == null) updatedUser.setBio(
+          user.get().getBio()
+        );
+        if (updatedUser.getImage() == null) updatedUser.setImage(
+          user.get().getImage()
+        );
+        return UserRepository.update(usernameToUpdate, updatedUser);
+      } else throw new RuntimeException("User not found");
     }
     throw new RuntimeException("Not allowed to do this");
   }
