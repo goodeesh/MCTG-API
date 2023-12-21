@@ -36,6 +36,18 @@ CREATE TABLE public.cards (
 ALTER TABLE public.cards OWNER TO postgres;
 
 --
+-- Name: lobby; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.lobby (
+    date timestamp without time zone NOT NULL,
+    username character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.lobby OWNER TO postgres;
+
+--
 -- Name: packages; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -133,6 +145,14 @@ dfdd758f-649c-40f9-ba3a-8657f4b3439f	FireSpell	kienboec	f	25
 ce6bcaee-47e1-4011-a49e-5a4d7d4245f3	Knight	altenhof	f	21
 a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	f	55
 a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	altenhof	f	23
+\.
+
+
+--
+-- Data for Name: lobby; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.lobby (date, username) FROM stdin;
 \.
 
 
