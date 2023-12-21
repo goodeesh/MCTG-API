@@ -59,20 +59,6 @@ public class User {
     this.stats = stats;
   }
 
-  public User(
-    String username,
-    String name,
-    String bio,
-    String image,
-    Stats stats
-  ) {
-    this.username = username;
-    this.name = name;
-    this.bio = bio;
-    this.image = image;
-    this.stats = stats;
-  }
-
   public Stats getStats() {
     return stats;
   }
