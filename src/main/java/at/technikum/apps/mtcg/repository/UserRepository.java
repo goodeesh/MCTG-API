@@ -1,14 +1,11 @@
 package at.technikum.apps.mtcg.repository;
 
 import at.technikum.apps.mtcg.data.Database;
-import at.technikum.apps.mtcg.entity.Session;
 import at.technikum.apps.mtcg.entity.Stats;
 import at.technikum.apps.mtcg.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +61,40 @@ public class UserRepository {
           resultSet.getString("id"),
           resultSet.getString("username"),
           resultSet.getString("password")
+        );
+        users.add(user);
+      }
+      return this.users;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public List<User> findAllByElo() {
+    this.users = new ArrayList<>();
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT * FROM users ORDER BY elo DESC"
+      );
+      ResultSet resultSet = statement.executeQuery();
+    ) {
+      while (resultSet.next()) {
+        Stats stats = new Stats(
+          resultSet.getInt("wins"),
+          resultSet.getInt("losses"),
+          resultSet.getInt("elo")
+        );
+        User user = new User(
+          resultSet.getString("id"),
+          resultSet.getString("username"),
+          resultSet.getString("password"),
+          resultSet.getInt("money"),
+          resultSet.getString("name"),
+          resultSet.getString("bio"),
+          resultSet.getString("image"),
+          stats
         );
         users.add(user);
       }

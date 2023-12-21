@@ -37,6 +37,26 @@ public class User {
     this.image = image;
   }
 
+  public User(
+    String id,
+    String username,
+    String password,
+    Integer money,
+    String name,
+    String bio,
+    String image,
+    Stats stats
+  ) {
+    this.id = id;
+    this.username = username;
+    this.password = password;
+    this.money = money;
+    this.name = name;
+    this.bio = bio;
+    this.image = image;
+    this.stats = stats;
+  }
+
   public Stats getStats() {
     return stats;
   }
