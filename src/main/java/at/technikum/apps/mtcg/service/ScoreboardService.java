@@ -8,8 +8,14 @@ public class ScoreboardService {
 
   private UserRepository userRepository = new UserRepository();
 
-  public List<User> displayScoreboard() {
-    List<User> users = userRepository.findAllByElo();
-    return users;
+  public List<User> displayScoreboard(String token) {
+    if (token == null || token.isEmpty() || token.equals("")) {
+      throw new RuntimeException("Not allowed to do this");
+    }
+    try {
+      return userRepository.findAllByElo();
+    } catch (Exception e) {
+      throw new RuntimeException("Something went wrong");
+    }
   }
 }

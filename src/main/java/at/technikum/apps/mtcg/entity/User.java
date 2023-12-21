@@ -1,5 +1,7 @@
 package at.technikum.apps.mtcg.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class User {
 
   private String id;
@@ -57,6 +59,20 @@ public class User {
     this.stats = stats;
   }
 
+  public User(
+    String username,
+    String name,
+    String bio,
+    String image,
+    Stats stats
+  ) {
+    this.username = username;
+    this.name = name;
+    this.bio = bio;
+    this.image = image;
+    this.stats = stats;
+  }
+
   public Stats getStats() {
     return stats;
   }
@@ -70,6 +86,7 @@ public class User {
     this.password = password;
   }
 
+  @JsonIgnore
   public Integer getMoney() {
     return money;
   }
@@ -102,6 +119,7 @@ public class User {
     this.image = image;
   }
 
+  @JsonIgnore
   public String getId() {
     return this.id;
   }
@@ -118,6 +136,7 @@ public class User {
     this.username = username;
   }
 
+  @JsonIgnore
   public String getPassword() {
     return password;
   }

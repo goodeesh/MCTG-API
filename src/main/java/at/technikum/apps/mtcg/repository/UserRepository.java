@@ -57,6 +57,7 @@ public class UserRepository {
       ResultSet resultSet = statement.executeQuery();
     ) {
       while (resultSet.next()) {
+        if (resultSet.getString("username").equals("admin")) continue;
         User user = new User(
           resultSet.getString("id"),
           resultSet.getString("username"),
@@ -81,6 +82,7 @@ public class UserRepository {
       ResultSet resultSet = statement.executeQuery();
     ) {
       while (resultSet.next()) {
+        if (resultSet.getString("username").equals("admin")) continue;
         Stats stats = new Stats(
           resultSet.getInt("wins"),
           resultSet.getInt("losses"),

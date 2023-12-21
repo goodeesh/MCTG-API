@@ -20,7 +20,6 @@ public class ScoreboardController implements Controller {
   public Response handle(Request request) {
     switch (request.getMethod()) {
       case "GET":
-        System.err.println("GET from scoreboard controller");
         return handleGet(request);
       default:
         break;
@@ -34,14 +33,25 @@ public class ScoreboardController implements Controller {
   }
 
   private Response handleGet(Request request) {
+    String token = request.getAuthorization();
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       return new Response(
         HttpStatus.OK,
-        objectMapper.writeValueAsString(scoreboardService.displayScoreboard())
+        objectMapper.writeValueAsString(
+          scoreboardService.displayScoreboard(token)
+        )
       );
     } catch (Exception e) {
-      return new Response(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+      if (
+        e.getMessage().contains("Not allowed to do this")
+      ) return new Response(
+        HttpStatus.UNAUTHORIZED,
+        e.getMessage()
+      ); else return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        e.getMessage()
+      );
     }
   }
 }
