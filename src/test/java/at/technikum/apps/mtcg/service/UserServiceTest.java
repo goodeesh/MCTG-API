@@ -84,7 +84,7 @@ class UserServiceTest {
     UserRepository userRepository = mock(UserRepository.class);
     when(userRepository.find(usernameToUpdate))
       .thenReturn(Optional.of(new User()));
-    when(userRepository.update(usernameToUpdate, updatedUser, token))
+    when(userRepository.update(usernameToUpdate, updatedUser))
       .thenReturn(Optional.of(updatedUser));
 
     UserService userService = new UserService(userRepository, auth);
