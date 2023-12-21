@@ -74,7 +74,10 @@ CREATE TABLE public.users (
     money integer DEFAULT 60,
     name character varying(255),
     bio text,
-    image text
+    image text,
+    wins integer DEFAULT 0,
+    losses integer DEFAULT 0,
+    elo integer DEFAULT 1500
 );
 
 
@@ -157,10 +160,10 @@ d9a8ea2a-4e8e-41a5-a3c0-b454b8b0ccf1	Bearer altenhof-mtcgToken	altenhof	2023-12-
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, username, password, money, name, bio, image) FROM stdin;
-df5fb65a-b561-4a0e-a23c-c10e79e49b12	admin	istrator	60	\N	\N	\N
-fb6728f1-7121-47b4-b11d-030070a95845	kienboec	daniel	0	\N	\N	\N
-c7f290c1-2469-4d45-af01-32f38c2e44df	altenhof	markus	0	\N	\N	\N
+COPY public.users (id, username, password, money, name, bio, image, wins, losses, elo) FROM stdin;
+df5fb65a-b561-4a0e-a23c-c10e79e49b12	admin	istrator	60	\N	\N	\N	\N	0	1500
+c7f290c1-2469-4d45-af01-32f38c2e44df	altenhof	markus	0	\N	\N	\N	\N	0	1500
+fb6728f1-7121-47b4-b11d-030070a95845	kienboec	daniel	0	Kienboeck	me playin...	:-)	0	0	1500
 \.
 
 

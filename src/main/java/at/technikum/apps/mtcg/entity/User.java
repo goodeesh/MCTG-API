@@ -9,6 +9,7 @@ public class User {
   private String name;
   private String bio;
   private String image;
+  private Stats stats;
 
   public User() {}
 
@@ -34,6 +35,14 @@ public class User {
     this.name = name;
     this.bio = bio;
     this.image = image;
+  }
+
+  public Stats getStats() {
+    return stats;
+  }
+
+  public void setStats(Stats stats) {
+    this.stats = stats;
   }
 
   public User(String username, String password) {

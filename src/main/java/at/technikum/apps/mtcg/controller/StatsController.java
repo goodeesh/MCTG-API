@@ -1,31 +1,69 @@
 package at.technikum.apps.mtcg.controller;
 
-import at.technikum.server.http.HttpContentType;
+import at.technikum.apps.mtcg.entity.Stats;
+import at.technikum.apps.mtcg.helper.Helper;
+import at.technikum.apps.mtcg.service.StatsService;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 
 public class StatsController implements Controller {
 
-    @Override
-    public boolean supports(String route) {
-        return route.equals("/stats");
-    }
+  private StatsService statsService = new StatsService();
 
-    @Override
-    public Response handle(Request request) {
-        switch (request.getMethod()) {
-            case "GET":
-                System.err.println("this is a get request in " + request.getRoute() + "... handling it");
-                break;
-            default:
-                break;
-        }
-        Response response = new Response();
-        response.setStatus(HttpStatus.OK);
-        response.setContentType(HttpContentType.TEXT_PLAIN);
-        response.setBody("stats controller");
+  @Override
+  public boolean supports(String route) {
+    return route.equals("/stats");
+  }
 
-        return response;
+  @Override
+  public Response handle(Request request) {
+    String route = request.getRoute();
+    new Helper();
+    Optional<String> secondParameter = Helper.getSecondParameterRoute(route);
+    if (secondParameter.isEmpty()) { // no username set
+      switch (request.getMethod()) {
+        case "GET":
+          return find(request);
+        default:
+          break;
+      }
     }
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
+  }
+
+  private Response find(Request request) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    String token = request.getAuthorization();
+    Stats stats;
+    try {
+      stats = statsService.getStatsFromUser(token);
+    } catch (RuntimeException e) {
+      if (e.getMessage().contains("Not allowed to do this")) {
+        return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");
+      } else {
+        return new Response(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Something went wrong"
+        );
+      }
+    }
+    String statsJson;
+    try {
+      statsJson = objectMapper.writeValueAsString(stats);
+    } catch (JsonProcessingException e) {
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong"
+      );
+    }
+    System.err.println(statsJson);
+    return new Response(HttpStatus.OK, statsJson);
+  }
 }

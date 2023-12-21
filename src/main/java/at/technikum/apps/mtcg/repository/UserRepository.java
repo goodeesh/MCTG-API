@@ -2,6 +2,7 @@ package at.technikum.apps.mtcg.repository;
 
 import at.technikum.apps.mtcg.data.Database;
 import at.technikum.apps.mtcg.entity.Session;
+import at.technikum.apps.mtcg.entity.Stats;
 import at.technikum.apps.mtcg.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,6 +25,29 @@ public class UserRepository {
 
   public UserRepository() {
     this.users = new ArrayList<>();
+  }
+
+  public Stats getStats(String username) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT wins, losses, elo FROM users WHERE username = ?"
+      );
+    ) {
+      statement.setString(1, username);
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        return new Stats(
+          resultSet.getInt("wins"),
+          resultSet.getInt("losses"),
+          resultSet.getInt("elo")
+        );
+      }
+      return null;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   public List<User> findAll() {
