@@ -66,7 +66,7 @@ compile_project() {
 
     kill_port_process
 
-    Stop the server before deleting the target directory
+    # Stop the server before deleting the target directory
     if [[ -n "$SERVER_PID" ]]; then
         echo "Stopping server..."
         if ps -p $SERVER_PID > /dev/null; then
@@ -77,18 +77,26 @@ compile_project() {
         fi
     fi
 
-    # Delete the target directory
-    #rm -rf target
+    # Delete the target directory (optional, Maven might handle this)
+    # rm -rf target
 
-    nice mvn package
-    
-    echo "Compilation complete."
+    # Maven command to compile and package the project
+    echo "Compiling with Maven..."
+    nice mvn package  # Adjust Maven goals if needed
 
-    echo "Starting server..."
-    java -jar $SERVER_JAR &
-    SERVER_PID=$!
-    echo "Server started (PID: $SERVER_PID)."
+    if [ $? -eq 0 ]; then
+        echo "Compilation complete."
+        
+        # Running the server after successful compilation using mvn exec:java
+        echo "Starting server..."
+        mvn exec:java -Dexec.mainClass="at.technikum.Main" &
+        SERVER_PID=$!
+        echo "Server started (PID: $SERVER_PID)."
+    else
+        echo "Compilation failed. Server not started."
+    fi
 }
+
 
 watch_changes() {
     echo "Watching directory: $WATCH_DIR"
