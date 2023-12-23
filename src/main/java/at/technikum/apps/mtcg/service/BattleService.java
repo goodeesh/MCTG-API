@@ -29,9 +29,9 @@ public class BattleService {
     }
     try {
       while (lobbyRepository.isLobbyEmpty(user.getUsername())) {
-        System.err.println("hi from while");
         Thread.sleep(1000);
       }
+      lobbyRepository.findBattle(user.getUsername());
     } catch (Exception e) {
       throw new RuntimeException("Something went wrong");
     }
