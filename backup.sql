@@ -40,7 +40,7 @@ ALTER TABLE public.cards OWNER TO postgres;
 --
 
 CREATE TABLE public.lobby (
-    date timestamp without time zone NOT NULL,
+    date character varying(255) NOT NULL,
     username character varying(255) NOT NULL
 );
 
@@ -153,6 +153,7 @@ a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	altenhof	f	23
 --
 
 COPY public.lobby (date, username) FROM stdin;
+2023-12-23 09:38:38.049142+01	kienboec
 \.
 
 

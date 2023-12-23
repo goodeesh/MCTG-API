@@ -28,8 +28,8 @@ public class BattleService {
       throw new RuntimeException("Not enough cards in deck");
     }
     try {
-      while (lobbyRepository.isLobbyEmpty()) {
-        System.err.println("Waiting for opponent");
+      while (lobbyRepository.isLobbyEmpty(user.getUsername())) {
+        System.err.println("hi from while");
         Thread.sleep(1000);
       }
     } catch (Exception e) {
