@@ -31,7 +31,7 @@ public class BattleService {
       while (lobbyRepository.isLobbyEmpty(user.getUsername())) {
         Thread.sleep(1000);
       }
-      lobbyRepository.findBattle(user.getUsername());
+      User userToFight = lobbyRepository.findBattle(user.getUsername());
     } catch (Exception e) {
       throw new RuntimeException("Something went wrong");
     }
