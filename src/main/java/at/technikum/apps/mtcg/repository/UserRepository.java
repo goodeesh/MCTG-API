@@ -118,6 +118,11 @@ public class UserRepository {
       statement.setString(1, username);
       ResultSet resultSet = statement.executeQuery();
       if (resultSet.next()) {
+        Stats stats = new Stats(
+          resultSet.getInt("wins"),
+          resultSet.getInt("losses"),
+          resultSet.getInt("elo")
+        );
         user =
           new User(
             resultSet.getString("id"),
@@ -126,7 +131,8 @@ public class UserRepository {
             resultSet.getInt("money"),
             resultSet.getString("name"),
             resultSet.getString("bio"),
-            resultSet.getString("image")
+            resultSet.getString("image"),
+            stats
           );
       }
       if (user != null) return Optional.ofNullable(

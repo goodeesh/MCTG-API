@@ -41,7 +41,9 @@ ALTER TABLE public.cards OWNER TO postgres;
 
 CREATE TABLE public.lobby (
     date character varying(255) NOT NULL,
-    username character varying(255) NOT NULL
+    username character varying(255) NOT NULL,
+    card character varying(255),
+    ready boolean DEFAULT false
 );
 
 
@@ -101,7 +103,6 @@ ALTER TABLE public.users OWNER TO postgres;
 
 COPY public.cards (id, name, owner, indeck, damage) FROM stdin;
 d60e23cf-2238-4d49-844f-c7589ee5342e	WaterSpell	kienboec	t	22
-aa9999a0-734c-49c6-8f4a-651864b14e62	RegularSpell	altenhof	f	50
 d6e9c720-9b5a-40c7-a6b2-bc34752e3463	Knight	altenhof	f	20
 02a9c76e-b17d-427f-9240-2dd49b0d3bfd	RegularSpell	altenhof	f	45
 ed1dc1bc-f0aa-4a0c-8d43-1402189b33c8	WaterGoblin	altenhof	f	10
@@ -116,8 +117,6 @@ d7d0cb94-2cbf-4f97-8ccf-9933dc5354b8	WaterGoblin	altenhof	f	9
 dcd93250-25a7-4dca-85da-cad2789f7198	FireSpell	altenhof	f	23
 67f9048f-99b8-4ae4-b866-d8008d00c53d	WaterGoblin	altenhof	f	10
 2508bf5c-20d7-43b4-8c77-bc677decadef	FireElf	altenhof	f	25
-70962948-2bf7-44a9-9ded-8c68eeac7793	WaterGoblin	altenhof	f	9
-74635fae-8ad3-4295-9139-320ab89c2844	FireSpell	altenhof	f	55
 845f0dc7-37d0-426e-994e-43fc3ac83c08	WaterGoblin	kienboec	t	10
 99f8f8dc-e25e-4a95-aa2c-782823f36e2a	Dragon	kienboec	t	50
 e85e3976-7c86-4d06-9a80-641c2019a79f	WaterSpell	kienboec	t	20
@@ -143,8 +142,11 @@ f8043c23-1534-4487-b66b-238e0c3c39b5	WaterSpell	kienboec	f	23
 1cb6ab86-bdb2-47e5-b6e4-68c5ab389334	Ork	kienboec	f	45
 dfdd758f-649c-40f9-ba3a-8657f4b3439f	FireSpell	kienboec	f	25
 ce6bcaee-47e1-4011-a49e-5a4d7d4245f3	Knight	altenhof	f	21
-a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	f	55
 a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	altenhof	f	23
+aa9999a0-734c-49c6-8f4a-651864b14e62	RegularSpell	altenhof	t	50
+70962948-2bf7-44a9-9ded-8c68eeac7793	WaterGoblin	altenhof	t	9
+74635fae-8ad3-4295-9139-320ab89c2844	FireSpell	altenhof	t	55
+a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	t	55
 \.
 
 
@@ -152,8 +154,8 @@ a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	altenhof	f	23
 -- Data for Name: lobby; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.lobby (date, username) FROM stdin;
-2023-12-23 09:38:38.049142+01	kienboec
+COPY public.lobby (date, username, card, ready) FROM stdin;
+2023-12-24 11:13:01.188755+01	altenhof	\N	f
 \.
 
 
