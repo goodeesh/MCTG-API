@@ -36,6 +36,21 @@ CREATE TABLE public.cards (
 ALTER TABLE public.cards OWNER TO postgres;
 
 --
+-- Name: history; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.history (
+    id character varying(255) NOT NULL,
+    type character varying(255),
+    users character varying(255),
+    "time" character varying(255),
+    result character varying(255)
+);
+
+
+ALTER TABLE public.history OWNER TO postgres;
+
+--
 -- Name: lobby; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -151,12 +166,19 @@ a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	t	55
 
 
 --
+-- Data for Name: history; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.history (id, type, users, "time", result) FROM stdin;
+\.
+
+
+--
 -- Data for Name: lobby; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.lobby (date, username, card, ready) FROM stdin;
-2023-12-25 03:38:24.736521+01	kienboec	RegularSpell	t
-2023-12-25 03:38:21.94521+01	altenhof	RegularSpell	t
+2023-12-25 11:53:45.188457+01	kienboec	\N	f
 \.
 
 
@@ -197,6 +219,14 @@ fb6728f1-7121-47b4-b11d-030070a95845	kienboec	daniel	0	Kienboeck	me playin...	:-
 
 ALTER TABLE ONLY public.cards
     ADD CONSTRAINT cards_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: history history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.history
+    ADD CONSTRAINT history_pkey PRIMARY KEY (id);
 
 
 --
