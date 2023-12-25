@@ -13,7 +13,10 @@ public class Helper {
     return random.nextInt(max - min) + min;
   }
 
-  public static synchronized Card whichCardWins(Card card1, Card card2) {
+  public static synchronized Optional<Card> whichCardWins(
+    Card card1,
+    Card card2
+  ) {
     if (card1 == null || card2 == null) {
       throw new IllegalArgumentException("One or both cards are null.");
     }
@@ -37,54 +40,90 @@ public class Helper {
     return !card.getName().toLowerCase().contains("spell");
   }
 
-  private static Card resolveMonsterFight(Card card1, Card card2) {
+  private static Optional<Card> resolveMonsterFight(Card card1, Card card2) {
     // Pure monster fight, no effect from element types
     if (card1.getDamage() > card2.getDamage()) {
-      return card1;
+      return Optional.of(card1);
     } else if (card1.getDamage() < card2.getDamage()) {
-      return card2;
+      return Optional.of(card2);
     } else {
       // Draw - randomly select one of the cards
-      return random.nextBoolean() ? card1 : card2;
+      System.err.println(
+        "there was a draw between " +
+        card1.getName() +
+        " and " +
+        card2.getName()
+      );
+      return Optional.empty();
     }
   }
 
-  private static Card resolveSpellFight(Card card1, Card card2) {
+  private static Optional<Card> resolveSpellFight(Card card1, Card card2) {
     // Spell vs Spell comparison
     String element1 = extractElement(card1.getName());
     String element2 = extractElement(card2.getName());
 
+    double card1Damage = card1.getDamage();
+    double card2Damage = card2.getDamage();
+
     if (isEffectiveAgainst(element1, element2)) {
-      return card1;
+      // card1 is effective against card2, so card1's damage is doubled
+      card1Damage *= 2;
     } else if (isEffectiveAgainst(element2, element1)) {
-      return card2;
+      // card2 is effective against card1, so card2's damage is doubled
+      card2Damage *= 2;
+    }
+
+    // Compare damage
+    if (card1Damage > card2Damage) {
+      return Optional.of(card1);
+    } else if (card1Damage < card2Damage) {
+      return Optional.of(card2);
     } else {
-      // No effect - randomly select one of the cards
-      return random.nextBoolean() ? card1 : card2;
+      // It's a draw, so return an empty Optional
+      System.err.println(
+        "there was a draw between " +
+        card1.getName() +
+        " and " +
+        card2.getName()
+      );
+      return Optional.empty();
     }
   }
 
-  private static Card resolveMonsterSpellFight(Card monster, Card spell) {
+  private static Optional<Card> resolveMonsterSpellFight(
+    Card monster,
+    Card spell
+  ) {
     // Monster vs Spell comparison
     String monsterElement = extractElement(monster.getName());
     String spellElement = extractElement(spell.getName());
 
+    double monsterDamage = monster.getDamage();
+    double spellDamage = spell.getDamage();
+
     if (isEffectiveAgainst(spellElement, monsterElement)) {
-      // Spell is effective against monster, so spell wins
-      return spell;
+      // Spell is effective against monster, so spell damage is doubled
+      spellDamage *= 2;
     } else if (isEffectiveAgainst(monsterElement, spellElement)) {
-      // Monster is effective against spell, so monster wins
-      return monster;
+      // Monster is effective against spell, so monster damage is doubled
+      monsterDamage *= 2;
+    }
+
+    // Compare damage
+    if (monsterDamage > spellDamage) {
+      return Optional.of(monster);
+    } else if (spellDamage > monsterDamage) {
+      return Optional.of(spell);
     } else {
-      // Neither is effective against the other, so compare damage
-      if (monster.getDamage() > spell.getDamage()) {
-        return monster;
-      } else if (spell.getDamage() > monster.getDamage()) {
-        return spell;
-      } else {
-        // It's a draw, so return null or throw an exception
-        return null;
-      }
+      // It's a draw, so return an empty Optional
+      System.err.println(
+        "there was a draw between " +
+        monster.getName() +
+        " and " +
+        spell.getName()
+      );
+      return Optional.empty();
     }
   }
 

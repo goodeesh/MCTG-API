@@ -117,7 +117,6 @@ d7d0cb94-2cbf-4f97-8ccf-9933dc5354b8	WaterGoblin	altenhof	f	9
 dcd93250-25a7-4dca-85da-cad2789f7198	FireSpell	altenhof	f	23
 67f9048f-99b8-4ae4-b866-d8008d00c53d	WaterGoblin	altenhof	f	10
 2508bf5c-20d7-43b4-8c77-bc677decadef	FireElf	altenhof	f	25
-845f0dc7-37d0-426e-994e-43fc3ac83c08	WaterGoblin	kienboec	t	10
 99f8f8dc-e25e-4a95-aa2c-782823f36e2a	Dragon	kienboec	t	50
 e85e3976-7c86-4d06-9a80-641c2019a79f	WaterSpell	kienboec	t	20
 171f6076-4eb5-4a7d-b3f2-2d650cc3d237	RegularSpell	kienboec	t	28
@@ -147,6 +146,7 @@ aa9999a0-734c-49c6-8f4a-651864b14e62	RegularSpell	altenhof	t	50
 70962948-2bf7-44a9-9ded-8c68eeac7793	WaterGoblin	altenhof	t	9
 74635fae-8ad3-4295-9139-320ab89c2844	FireSpell	altenhof	t	55
 a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	t	55
+845f0dc7-37d0-426e-994e-43fc3ac83c08	WaterGoblin	kienboec	f	10
 \.
 
 
@@ -155,7 +155,8 @@ a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	t	55
 --
 
 COPY public.lobby (date, username, card, ready) FROM stdin;
-2023-12-24 11:13:01.188755+01	altenhof	\N	f
+2023-12-25 03:38:24.736521+01	kienboec	RegularSpell	t
+2023-12-25 03:38:21.94521+01	altenhof	RegularSpell	t
 \.
 
 

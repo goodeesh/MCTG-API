@@ -189,11 +189,17 @@ public class LobbyRepository {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "UPDATE lobby SET card = ? WHERE username = ?"
+        "UPDATE lobby SET card = ?, ready = ? WHERE username = ?"
       );
     ) {
-      statement.setString(1, cardName);
-      statement.setString(2, username);
+      if (cardName == null) {
+        statement.setString(1, null);
+        statement.setBoolean(2, false);
+      } else {
+        statement.setString(1, cardName);
+        statement.setBoolean(2, true);
+      }
+      statement.setString(3, username);
       statement.executeUpdate();
     } catch (Exception e) {
       throw new RuntimeException("Something went wrong", e);
