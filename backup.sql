@@ -170,6 +170,8 @@ a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	altenhof	t	55
 --
 
 COPY public.history (id, type, users, "time", result) FROM stdin;
+06555275-3cc4-4e60-96c0-dbbe0ab76f03	battle	kienboec,altenhof	\N	altenhof
+81669a1c-a06e-47e2-a3e6-7be6e4ae175c	battle	altenhof,kienboec	\N	altenhof
 \.
 
 
@@ -178,7 +180,6 @@ COPY public.history (id, type, users, "time", result) FROM stdin;
 --
 
 COPY public.lobby (date, username, card, ready) FROM stdin;
-2023-12-25 11:53:45.188457+01	kienboec	\N	f
 \.
 
 

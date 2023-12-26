@@ -48,13 +48,11 @@ public class Helper {
       return Optional.of(card2);
     } else {
       // Draw - randomly select one of the cards
-      System.err.println(
-        "there was a draw between " +
-        card1.getName() +
-        " and " +
-        card2.getName()
-      );
-      return Optional.empty();
+      if (getRandomNumber(0, 1) == 0) {
+        return Optional.of(card1);
+      } else {
+        return Optional.of(card2);
+      }
     }
   }
 
@@ -80,14 +78,11 @@ public class Helper {
     } else if (card1Damage < card2Damage) {
       return Optional.of(card2);
     } else {
-      // It's a draw, so return an empty Optional
-      System.err.println(
-        "there was a draw between " +
-        card1.getName() +
-        " and " +
-        card2.getName()
-      );
-      return Optional.empty();
+      if (getRandomNumber(0, 1) == 0) {
+        return Optional.of(card1);
+      } else {
+        return Optional.of(card2);
+      }
     }
   }
 
@@ -116,14 +111,11 @@ public class Helper {
     } else if (spellDamage > monsterDamage) {
       return Optional.of(spell);
     } else {
-      // It's a draw, so return an empty Optional
-      System.err.println(
-        "there was a draw between " +
-        monster.getName() +
-        " and " +
-        spell.getName()
-      );
-      return Optional.empty();
+      if (getRandomNumber(0, 1) == 0) {
+        return Optional.of(monster);
+      } else {
+        return Optional.of(spell);
+      }
     }
   }
 

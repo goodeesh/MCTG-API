@@ -34,7 +34,7 @@ public class BattlesController implements Controller {
   private Response startBattle(Request request) {
     String token = request.getAuthorization();
     //ObjectMapper objectMapper = new ObjectMapper();
-    String responseString = battleService.createBattleIdForThreads(token);
+    String responseString = battleService.startBattle(token);
     return new Response(HttpStatus.OK, responseString);
   }
 }

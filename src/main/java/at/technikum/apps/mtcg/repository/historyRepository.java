@@ -3,6 +3,8 @@ package at.technikum.apps.mtcg.repository;
 import at.technikum.apps.mtcg.data.Database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 public class historyRepository {
 
@@ -12,7 +14,7 @@ public class historyRepository {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "INSERT INTO history(id, type, users, result) VALUES(?, ?, ?, ?)"
+        "INSERT INTO history(id, type, users, result, time) VALUES(?, ?, ?, ?, ?)"
       );
     ) {
       String usersString = "";
@@ -26,6 +28,7 @@ public class historyRepository {
       statement.setString(2, type);
       statement.setString(3, usersString);
       statement.setString(4, result);
+      statement.setTimestamp(5, Timestamp.from(Instant.now()));
       statement.executeUpdate();
     } catch (Exception e) {
       throw new RuntimeException("Something went wrong", e);

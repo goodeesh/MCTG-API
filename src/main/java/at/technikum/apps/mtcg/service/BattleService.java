@@ -44,7 +44,6 @@ public class BattleService {
           ? 0
           : Helper.getRandomNumber(0, cards.size() - 1);
         Card card = cards.get(random);
-        lobbyRepository.selectCard(username, card.getName());
         int randomOponent = cardsToFight.size() == 1
           ? 0
           : Helper.getRandomNumber(0, cardsToFight.size() - 1);
@@ -90,12 +89,8 @@ public class BattleService {
     }
   }
 
-  public String createBattleIdForThreads(String token) {
+  public String startBattle(String token) {
     String battleId = UUID.randomUUID().toString();
-    return startBattle(token, battleId);
-  }
-
-  public String startBattle(String token, String battleId) {
     String winner = null;
     String[] users;
     String type = "battle";
