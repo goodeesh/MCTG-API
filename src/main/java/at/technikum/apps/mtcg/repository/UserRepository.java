@@ -47,6 +47,34 @@ public class UserRepository {
     }
   }
 
+  public void increaseWins(String username) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "UPDATE users SET wins = wins + 1 WHERE username = ?"
+      )
+    ) {
+      statement.setString(1, username);
+      statement.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void increaseLosses(String username) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "UPDATE users SET losses = losses + 1 WHERE username = ?"
+      )
+    ) {
+      statement.setString(1, username);
+      statement.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   public List<User> findAll() {
     this.users = new ArrayList<>();
 

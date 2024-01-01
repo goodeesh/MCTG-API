@@ -95,6 +95,8 @@ public class BattleService {
     String[] users;
     String type = "battle";
     String username = auth.extractUsernameFromToken(token);
+    String userToFightUsername = "";
+    User userToFight = null;
     if (token == null || token.isEmpty() || token.equals("")) {
       throw new RuntimeException("Not allowed to do this");
     }
@@ -110,7 +112,8 @@ public class BattleService {
         Thread.sleep(1000);
         System.err.println("waiting for opponent");
       }
-      User userToFight = lobbyRepository.findBattle(user.getUsername());
+      userToFight = lobbyRepository.findBattle(user.getUsername());
+      userToFightUsername = userToFight.getUsername();
       users = new String[] { username, userToFight.getUsername() };
       List<Card> cardsToFight = cardRepository.getCardsFromUserWhereInDeckTrue(
         userToFight.getUsername()
@@ -125,12 +128,15 @@ public class BattleService {
       e.printStackTrace();
       throw new RuntimeException("Something went wrong");
     }
-    if (winner != null) historyRepository.saveEvent(
-      battleId,
-      type,
-      users,
-      winner
-    );
+    if (winner != null) {
+      historyRepository.saveEvent(battleId, type, users, winner);
+      userRepository.increaseWins(winner);
+      if (username.equals(winner)) {
+        userRepository.increaseLosses(userToFightUsername);
+      } else if (userToFightUsername.equals(winner)) {
+        userRepository.increaseLosses(user.getUsername());
+      }
+    }
     return "Battle finished";
   }
 }
