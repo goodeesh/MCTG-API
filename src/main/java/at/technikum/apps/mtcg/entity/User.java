@@ -1,6 +1,8 @@
 package at.technikum.apps.mtcg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 public class User {
 
@@ -105,7 +107,7 @@ public class User {
     this.image = image;
   }
 
-  @JsonIgnore
+  @JsonProperty(access = Access.WRITE_ONLY)
   public String getId() {
     return this.id;
   }
@@ -122,7 +124,7 @@ public class User {
     this.username = username;
   }
 
-  @JsonIgnore
+  @JsonProperty(access = Access.WRITE_ONLY)
   public String getPassword() {
     return password;
   }

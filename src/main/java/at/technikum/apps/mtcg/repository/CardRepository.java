@@ -139,32 +139,45 @@ public class CardRepository {
 
   public boolean setCardsInDeckToTrue(String username, String[] cardsIds) {
     try (
-      Connection connection = database.getConnection();
-      PreparedStatement statement = connection.prepareStatement(
-        "UPDATE cards SET indeck = ? WHERE owner = ?"
-      )
-    ) {
+        Connection connection = database.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+            "UPDATE cards SET indeck = ? WHERE owner = ?")) {
       statement.setBoolean(1, false);
       statement.setString(2, username);
       statement.executeUpdate();
       try (
-        PreparedStatement statement2 = connection.prepareStatement(
-          "UPDATE cards SET indeck = ? WHERE id = ?"
-        );
-      ) {
-        Thread.sleep(1000);
+          PreparedStatement statement2 = connection.prepareStatement(
+              "UPDATE cards SET indeck = ? WHERE id = ?")) {
         for (String cardId : cardsIds) {
           System.err.println("trying to set card " + cardId + " to true");
           statement2.setBoolean(1, true);
           statement2.setString(2, cardId);
           statement2.executeUpdate();
         }
-      } catch (InterruptedException e) {
-        return false;
       }
     } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
     return true;
+  }
+  public boolean doesCardBelongToUser(String cardId, String username) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT COUNT(*) FROM cards WHERE id = ? AND owner = ?"
+      )
+    ) {
+      statement.setString(1, cardId);
+      statement.setString(2, username);
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        int count = resultSet.getInt(1);
+        return count > 0;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 }

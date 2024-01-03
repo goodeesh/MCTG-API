@@ -84,7 +84,6 @@ public class DeckController implements Controller {
     List<Card> cards = null;
     try {
       cards = deckService.changueDeck(cardsIds, username, authToken);
-      System.err.println(cards);
     } catch (RuntimeException e) {
       if (e.getMessage().contains("Not allowed to do this")) {
         return new Response(HttpStatus.UNAUTHORIZED, "Not allowed to do this");

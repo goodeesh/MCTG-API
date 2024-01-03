@@ -47,12 +47,12 @@ public class UserRepository {
     }
   }
 
-  public void increaseWins(String username) {
+  public void increaseWinsAndElo(String username) {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "UPDATE users SET wins = wins + 1 WHERE username = ?"
-      )
+        "UPDATE users SET wins = wins + 1, elo = elo + 3 WHERE username = ?"
+        )
     ) {
       statement.setString(1, username);
       statement.executeUpdate();
@@ -61,11 +61,11 @@ public class UserRepository {
     }
   }
 
-  public void increaseLosses(String username) {
+  public void increaseLossesAndDecreaseElo(String username) {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "UPDATE users SET losses = losses + 1 WHERE username = ?"
+        "UPDATE users SET losses = losses + 1, elo = elo - 5 WHERE username = ?"
       )
     ) {
       statement.setString(1, username);
@@ -105,8 +105,8 @@ public class UserRepository {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "SELECT * FROM users ORDER BY elo DESC"
-      );
+        "SELECT * FROM users ORDER BY elo DESC, wins DESC"
+        );
       ResultSet resultSet = statement.executeQuery();
     ) {
       while (resultSet.next()) {

@@ -130,11 +130,11 @@ public class BattleService {
     }
     if (winner != null) {
       historyRepository.saveEvent(battleId, type, users, winner);
-      userRepository.increaseWins(winner);
+      userRepository.increaseWinsAndElo(winner);
       if (username.equals(winner)) {
-        userRepository.increaseLosses(userToFightUsername);
+        userRepository.increaseLossesAndDecreaseElo(userToFightUsername);
       } else if (userToFightUsername.equals(winner)) {
-        userRepository.increaseLosses(user.getUsername());
+        userRepository.increaseLossesAndDecreaseElo(user.getUsername());
       }
     }
     return "Battle finished";
