@@ -93,6 +93,18 @@ CREATE TABLE public.sessions (
 ALTER TABLE public.sessions OWNER TO postgres;
 
 --
+-- Name: tradings; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tradings (
+    id text NOT NULL,
+    cardid text
+);
+
+
+ALTER TABLE public.tradings OWNER TO postgres;
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -207,6 +219,14 @@ ae55753b-ae72-48b3-8393-a761d320303e	Bearer kienboec-mtcgToken	kienboec	2024-01-
 
 
 --
+-- Data for Name: tradings; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tradings (id, cardid) FROM stdin;
+\.
+
+
+--
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -258,6 +278,14 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- Name: tradings tradings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tradings
+    ADD CONSTRAINT tradings_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -287,6 +315,14 @@ ALTER TABLE ONLY public.cards
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_username_fkey FOREIGN KEY (username) REFERENCES public.users(username);
+
+
+--
+-- Name: tradings tradings_cardid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tradings
+    ADD CONSTRAINT tradings_cardid_fkey FOREIGN KEY (cardid) REFERENCES public.cards(id);
 
 
 --
