@@ -8,7 +8,6 @@ import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TradingsController implements Controller {
@@ -110,6 +109,10 @@ public class TradingsController implements Controller {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+    System.err.println(
+      "the Type of this card is " +
+      Helper.getTypeFromCard(trading.getCard().getName())
+    );
     try {
       return new Response(
         HttpStatus.OK,

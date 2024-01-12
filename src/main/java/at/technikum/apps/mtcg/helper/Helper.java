@@ -14,6 +14,7 @@ public class Helper {
   }
 
   public static String getTypeFromCard(String cardName) {
+    System.err.println("the name of the card is: " + cardName);
     if (cardName.toLowerCase().contains("spell")) {
       return "spell";
     } else {

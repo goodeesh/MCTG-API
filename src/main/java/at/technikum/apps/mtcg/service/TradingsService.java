@@ -89,10 +89,13 @@ public class TradingsService {
     if (
       tradingRepository.findById(tradeId).getMinimumDamage() >
       cardRepository.getCardById(cardId).getDamage() ||
-      Helper.getTypeFromCard(
-        tradingRepository.findById(tradeId).getCard().getName()
-      ) !=
-      Helper.getTypeFromCard(cardRepository.getCardById(cardId).getName())
+      !Helper
+        .getTypeFromCard(
+          tradingRepository.findById(tradeId).getCard().getName()
+        )
+        .equals(
+          Helper.getTypeFromCard(cardRepository.getCardById(cardId).getName())
+        )
     ) {
       throw new RuntimeException("Card does not meet minimum requirements");
     }
