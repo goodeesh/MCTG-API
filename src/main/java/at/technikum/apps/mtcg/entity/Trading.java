@@ -10,6 +10,8 @@ public class Trading {
   private final CardRepository cardRepository = new CardRepository();
   String id;
   Card card;
+  String type;
+  Integer minimumdamage;
 
   public Trading() {}
 
@@ -32,5 +34,22 @@ public class Trading {
 
   public void setCard(Card card) {
     this.card = card;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public Integer getMinimumDamage() {
+    return minimumdamage;
+  }
+
+  @JsonSetter("minimumdamage")
+  public void setMinimumDamage(Integer minimumdamage) {
+    this.minimumdamage = minimumdamage;
   }
 }

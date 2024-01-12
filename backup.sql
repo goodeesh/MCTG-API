@@ -223,7 +223,6 @@ ae55753b-ae72-48b3-8393-a761d320303e	Bearer kienboec-mtcgToken	kienboec	2024-01-
 --
 
 COPY public.tradings (id, cardid) FROM stdin;
-kljsgdf-sgdjhkg-sduifgkjdsgfjhg-209783nmbsdhnkm	ed1dc1bc-f0aa-4a0c-8d43-1402189b33c8
 6cd85277-4590-49d4-b0cf-ba0a921faad0	1cb6ab86-bdb2-47e5-b6e4-68c5ab389334
 \.
 

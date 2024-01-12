@@ -2,6 +2,7 @@ package at.technikum.apps.mtcg.service;
 
 import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.Trading;
+import at.technikum.apps.mtcg.repository.CardRepository;
 import at.technikum.apps.mtcg.repository.TradingRepository;
 import java.util.List;
 
@@ -9,6 +10,7 @@ public class TradingsService {
 
   private final Auth auth = new Auth();
   private final TradingRepository tradingRepository;
+  private final CardRepository cardRepository = new CardRepository();
 
   public TradingsService() {
     this.tradingRepository = new TradingRepository();
@@ -54,5 +56,36 @@ public class TradingsService {
     }
 
     return tradingRepository.deleteById(id);
+  }
+
+  public Boolean acceptTrade(String tradeId, String token, String cardId) {
+    if (token == null) {
+      throw new RuntimeException("UnauthorizedError");
+    }
+    if (!tradingRepository.isTradingIdPosted(tradeId)) {
+      throw new RuntimeException("Trading does not exist");
+    }
+    if (
+      auth
+        .extractUsernameFromToken(token)
+        .equals(
+          tradingRepository.findById(tradeId).getCard().getOwnerUsername()
+        )
+    ) {
+      throw new RuntimeException("You cannot trade with yourself");
+    }
+    if (cardRepository.getCardById(cardId).isInDeck()) {
+      throw new RuntimeException("Card is in deck. Not allowed to trade it");
+    }
+    if (
+      !cardRepository
+        .getCardById(cardId)
+        .getOwnerUsername()
+        .equals(auth.extractUsernameFromToken(token))
+    ) {
+      throw new RuntimeException("Card does not belong to you");
+    }
+
+    return null;
   }
 }

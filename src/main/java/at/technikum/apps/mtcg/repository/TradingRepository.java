@@ -30,6 +30,8 @@ public class TradingRepository {
         trading.setCard(
           cardRepository.getCardById(resultSet.getString("cardId"))
         );
+        trading.setMinimumDamage(resultSet.getInt("minimumdamage"));
+        trading.setType(resultSet.getString("type"));
         tradings.add(trading);
       }
     } catch (Exception e) {
@@ -58,11 +60,13 @@ public class TradingRepository {
     try (
       Connection connection = database.getConnection();
       PreparedStatement statement = connection.prepareStatement(
-        "INSERT INTO tradings (id, cardId) VALUES (?, ?)"
+        "INSERT INTO tradings (id, cardId, minimumdamage, type) VALUES (?, ?, ?, ?)"
       );
     ) {
       statement.setString(1, trading.getId());
       statement.setString(2, trading.getCard().getId());
+      statement.setInt(3, trading.getMinimumDamage());
+      statement.setString(4, trading.getType());
       statement.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();
@@ -101,6 +105,8 @@ public class TradingRepository {
         trading.setCard(
           cardRepository.getCardById(resultSet.getString("cardId"))
         );
+        trading.setMinimumDamage(resultSet.getInt("minimumdamage"));
+        trading.setType(resultSet.getString("type"));
         return trading;
       }
     } catch (Exception e) {

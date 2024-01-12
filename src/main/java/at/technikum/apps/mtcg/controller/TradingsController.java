@@ -1,5 +1,6 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.entity.Card;
 import at.technikum.apps.mtcg.entity.Trading;
 import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.TradingsService;
@@ -115,6 +116,8 @@ public class TradingsController implements Controller {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+    System.err.println("trading: " + trading.getType());
+    System.err.println("trading: " + trading.getMinimumDamage());
     try {
       return new Response(
         HttpStatus.OK,
@@ -149,5 +152,39 @@ public class TradingsController implements Controller {
         "Something went wrong"
       );
     }
+  }
+
+  public Response acceptTrade(Request request) {
+    String token = request.getAuthorization();
+    String tradingId = Helper.getSecondParameterRoute(request.getRoute()).get();
+    ObjectMapper objectMapper = new ObjectMapper();
+    String cardId = null;
+    try {
+      cardId = objectMapper.readValue(request.getBody(), String.class);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    try {
+      tradingService.accept(tradingId, token, cardId);
+      return new Response(HttpStatus.OK, "Trading accepted");
+    } catch (RuntimeException e) {
+      if (e.getMessage().equals("UnauthorizedError")) {
+        return new Response(HttpStatus.UNAUTHORIZED, "UnauthorizedError");
+      }
+      if (e.getMessage().equals("Trading does not exist")) {
+        return new Response(HttpStatus.NOT_FOUND, "Trading does not exist");
+      }
+      if (e.getMessage().equals("Trading does not belong to you")) {
+        return new Response(
+          HttpStatus.FORBIDDEN,
+          "Trading does not belong to you"
+        );
+      }
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong"
+      );
+    }
+    return null;
   }
 }
