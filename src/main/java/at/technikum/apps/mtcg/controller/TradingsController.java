@@ -1,6 +1,5 @@
 package at.technikum.apps.mtcg.controller;
 
-import at.technikum.apps.mtcg.entity.Card;
 import at.technikum.apps.mtcg.entity.Trading;
 import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.TradingsService;
@@ -9,6 +8,7 @@ import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TradingsController implements Controller {
@@ -47,13 +47,7 @@ public class TradingsController implements Controller {
         case "DELETE":
           return deleteTrade(request);
         case "POST":
-          System.err.println(
-            "this is a POST request in " +
-            request.getRoute() +
-            "... handling it for deal " +
-            secondArgument
-          );
-          break;
+          return acceptTrade(request);
         default:
           break;
       }
@@ -116,8 +110,6 @@ public class TradingsController implements Controller {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
-    System.err.println("trading: " + trading.getType());
-    System.err.println("trading: " + trading.getMinimumDamage());
     try {
       return new Response(
         HttpStatus.OK,
@@ -157,15 +149,9 @@ public class TradingsController implements Controller {
   public Response acceptTrade(Request request) {
     String token = request.getAuthorization();
     String tradingId = Helper.getSecondParameterRoute(request.getRoute()).get();
-    ObjectMapper objectMapper = new ObjectMapper();
-    String cardId = null;
+    String cardId = request.getBody();
     try {
-      cardId = objectMapper.readValue(request.getBody(), String.class);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
-    try {
-      tradingService.accept(tradingId, token, cardId);
+      tradingService.acceptTrade(tradingId, token, cardId);
       return new Response(HttpStatus.OK, "Trading accepted");
     } catch (RuntimeException e) {
       if (e.getMessage().equals("UnauthorizedError")) {
@@ -185,6 +171,5 @@ public class TradingsController implements Controller {
         "Something went wrong"
       );
     }
-    return null;
   }
 }

@@ -13,6 +13,14 @@ public class Helper {
     return random.nextInt(max - min) + min;
   }
 
+  public static String getTypeFromCard(String cardName) {
+    if (cardName.toLowerCase().contains("spell")) {
+      return "spell";
+    } else {
+      return "monster";
+    }
+  }
+
   public static synchronized Optional<Card> whichCardWins(
     Card card1,
     Card card2

@@ -47,13 +47,21 @@ public class HttpMapper {
     if (0 == contentLength) {
       return request;
     }
-
+    System.out.println("httpRequest: " + httpRequest);
+    System.out.println("contentLength: " + contentLength);
     String body = httpRequest.substring(httpRequest.length() - contentLength);
-
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode tree = objectMapper.readTree(body);
-      if (tree.isArray()) {
+      if (tree.isTextual()) {
+        // If the tree is a text value, remove the quotation marks if they are present
+        String bodyWithoutQuotes = body;
+        if (body.startsWith("\"") && body.endsWith("\"")) {
+          bodyWithoutQuotes = body.substring(1, body.length() - 1);
+        }
+        request.setBody(bodyWithoutQuotes);
+        return request;
+      } else if (tree.isArray()) {
         ArrayNode newArray = objectMapper.createArrayNode();
         for (JsonNode element : tree) {
           if (element.isObject()) {

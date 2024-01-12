@@ -2,6 +2,7 @@ package at.technikum.apps.mtcg.service;
 
 import at.technikum.apps.mtcg.auth.Auth;
 import at.technikum.apps.mtcg.entity.Trading;
+import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.repository.CardRepository;
 import at.technikum.apps.mtcg.repository.TradingRepository;
 import java.util.List;
@@ -58,7 +59,7 @@ public class TradingsService {
     return tradingRepository.deleteById(id);
   }
 
-  public Boolean acceptTrade(String tradeId, String token, String cardId) {
+  public void acceptTrade(String tradeId, String token, String cardId) {
     if (token == null) {
       throw new RuntimeException("UnauthorizedError");
     }
@@ -85,7 +86,19 @@ public class TradingsService {
     ) {
       throw new RuntimeException("Card does not belong to you");
     }
+    if (
+      tradingRepository.findById(tradeId).getMinimumDamage() >
+      cardRepository.getCardById(cardId).getDamage() ||
+      Helper.getTypeFromCard(
+        tradingRepository.findById(tradeId).getCard().getName()
+      ) !=
+      Helper.getTypeFromCard(cardRepository.getCardById(cardId).getName())
+    ) {
+      throw new RuntimeException("Card does not meet minimum requirements");
+    }
 
-    return null;
+    if (!tradingRepository.executeTrade(tradeId, cardId)) {
+      throw new RuntimeException("Something went wrong");
+    }
   }
 }

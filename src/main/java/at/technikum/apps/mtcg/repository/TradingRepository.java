@@ -114,4 +114,38 @@ public class TradingRepository {
     }
     return null;
   }
+
+  public Boolean executeTrade(String tradeId, String cardId) {
+    Trading trading = this.findById(tradeId);
+    String tradeOwner = trading.getCard().getOwnerUsername();
+    String cardOwner = cardRepository.getCardById(cardId).getOwnerUsername();
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement1 = connection.prepareStatement(
+        "UPDATE cards SET owner = ? WHERE id = ?"
+      );
+      PreparedStatement statement2 = connection.prepareStatement(
+        "UPDATE cards SET owner = ? WHERE id = ?"
+      );
+      PreparedStatement statement3 = connection.prepareStatement(
+        "DELETE FROM tradings WHERE id = ?"
+      );
+    ) {
+      statement1.setString(1, tradeOwner);
+      statement1.setString(2, cardId);
+      statement1.executeUpdate();
+
+      statement2.setString(1, cardOwner);
+      statement2.setString(2, trading.getCard().getId());
+      statement2.executeUpdate();
+
+      statement3.setString(1, tradeId);
+      statement3.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    System.err.println("executeTrade");
+    return true;
+  }
 }
