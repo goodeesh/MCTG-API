@@ -142,7 +142,6 @@ dfdd758f-649c-40f9-ba3a-8657f4b3439f	FireSpell	kienboec	f	25
 845f0dc7-37d0-426e-994e-43fc3ac83c08	WaterGoblin	kienboec	t	10
 99f8f8dc-e25e-4a95-aa2c-782823f36e2a	Dragon	kienboec	t	50
 e85e3976-7c86-4d06-9a80-641c2019a79f	WaterSpell	kienboec	t	20
-1cb6ab86-bdb2-47e5-b6e4-68c5ab389334	Ork	kienboec	t	45
 84d276ee-21ec-4171-a509-c1b88162831c	RegularSpell	kienboec	f	28
 d7d0cb94-2cbf-4f97-8ccf-9933dc5354b8	WaterGoblin	altenhof	f	9
 44c82fbc-ef6d-44ab-8c7a-9fb19a0e7c6e	Dragon	altenhof	f	55
@@ -174,6 +173,7 @@ a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	admin	f	23
 166c1fd5-4dcb-41a8-91cb-f45dcd57cef3	Knight	admin	f	22
 237dbaef-49e3-4c23-b64b-abf5c087b276	WaterSpell	admin	f	40
 27051a20-8580-43ff-a473-e986b52f297a	FireElf	admin	f	28
+1cb6ab86-bdb2-47e5-b6e4-68c5ab389334	Ork	kienboec	f	45
 \.
 
 
@@ -223,6 +223,8 @@ ae55753b-ae72-48b3-8393-a761d320303e	Bearer kienboec-mtcgToken	kienboec	2024-01-
 --
 
 COPY public.tradings (id, cardid) FROM stdin;
+kljsgdf-sgdjhkg-sduifgkjdsgfjhg-209783nmbsdhnkm	ed1dc1bc-f0aa-4a0c-8d43-1402189b33c8
+6cd85277-4590-49d4-b0cf-ba0a921faad0	1cb6ab86-bdb2-47e5-b6e4-68c5ab389334
 \.
 
 

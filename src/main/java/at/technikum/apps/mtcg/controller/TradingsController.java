@@ -1,5 +1,7 @@
 package at.technikum.apps.mtcg.controller;
 
+import at.technikum.apps.mtcg.entity.Trading;
+import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.service.TradingsService;
 import at.technikum.server.http.HttpContentType;
 import at.technikum.server.http.HttpStatus;
@@ -35,25 +37,14 @@ public class TradingsController implements Controller {
         case "GET":
           return findAll(request);
         case "POST":
-          System.err.println(
-            "this is a post request in " +
-            request.getRoute() +
-            "... handling it"
-          );
-          break;
+          return postTrade(request);
         default:
           break;
       }
     } else {
       switch (request.getMethod()) {
         case "DELETE":
-          System.err.println(
-            "this is a DELETE request in " +
-            request.getRoute() +
-            "... handling it for deal " +
-            secondArgument
-          );
-          break;
+          return deleteTrade(request);
         case "POST":
           System.err.println(
             "this is a POST request in " +
@@ -87,5 +78,76 @@ public class TradingsController implements Controller {
       );
     }
     return new Response(HttpStatus.OK, tradingsJson);
+  }
+
+  public Response deleteTrade(Request request) {
+    String token = request.getAuthorization();
+    String id = Helper.getSecondParameterRoute(request.getRoute()).get();
+    try {
+      tradingService.delete(id, token);
+      return new Response(HttpStatus.OK, "Trading deleted");
+    } catch (RuntimeException e) {
+      if (e.getMessage().equals("UnauthorizedError")) {
+        return new Response(HttpStatus.UNAUTHORIZED, "UnauthorizedError");
+      }
+      if (e.getMessage().equals("Trading does not exist")) {
+        return new Response(HttpStatus.NOT_FOUND, "Trading does not exist");
+      }
+      if (e.getMessage().equals("Trading does not belong to you")) {
+        return new Response(
+          HttpStatus.FORBIDDEN,
+          "Trading does not belong to you"
+        );
+      }
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong"
+      );
+    }
+  }
+
+  public Response postTrade(Request request) {
+    String token = request.getAuthorization();
+    ObjectMapper objectMapper = new ObjectMapper();
+    Trading trading = null;
+    try {
+      trading = objectMapper.readValue(request.getBody(), Trading.class);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    try {
+      return new Response(
+        HttpStatus.OK,
+        objectMapper.writeValueAsString(tradingService.save(trading, token))
+      );
+    } catch (JsonProcessingException e) {
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Error processing JSON"
+      );
+    } catch (RuntimeException e) {
+      if (e.getMessage().equals("UnauthorizedError")) {
+        return new Response(HttpStatus.UNAUTHORIZED, "UnauthorizedError");
+      }
+      if (e.getMessage().equals("Card does not belong to you")) {
+        return new Response(
+          HttpStatus.FORBIDDEN,
+          "Card does not belong to you"
+        );
+      }
+      if (e.getMessage().equals("Card is in deck. Not allowed to trade it")) {
+        return new Response(
+          HttpStatus.FORBIDDEN,
+          "Card is in deck. Not allowed to trade it"
+        );
+      }
+      if (e.getMessage().equals("Trading already exists")) {
+        return new Response(HttpStatus.CONFLICT, "Trading already exists");
+      }
+      return new Response(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong"
+      );
+    }
   }
 }

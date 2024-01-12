@@ -37,4 +37,75 @@ public class TradingRepository {
     }
     return tradings;
   }
+
+  public Boolean isTradingIdPosted(String id) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT * from tradings where id = ?"
+      )
+    ) {
+      statement.setString(1, id);
+      ResultSet resultSet = statement.executeQuery();
+      return resultSet.next();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  public Trading save(Trading trading) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "INSERT INTO tradings (id, cardId) VALUES (?, ?)"
+      );
+    ) {
+      statement.setString(1, trading.getId());
+      statement.setString(2, trading.getCard().getId());
+      statement.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return trading;
+  }
+
+  public Boolean deleteById(String id) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "DELETE FROM tradings WHERE id = ?"
+      );
+    ) {
+      statement.setString(1, id);
+      statement.executeUpdate();
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  public Trading findById(String id) {
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT * FROM tradings WHERE id = ?"
+      );
+    ) {
+      statement.setString(1, id);
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        Trading trading = new Trading();
+        trading.setId(resultSet.getString("id"));
+        trading.setCard(
+          cardRepository.getCardById(resultSet.getString("cardId"))
+        );
+        return trading;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }
