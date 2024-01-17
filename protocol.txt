@@ -48,6 +48,17 @@ in incompatible set ups for configuring the deck or making a battle. After some
 adaptations in the script that included the automatic drop of the tables at the beginning 
 it became my most useful tool for testing apart from unit test itself.
 
+·	Unique feature:
+As unique feature from my project I have incline myself for doing a history route. 
+In this history route a user can see what happened in the game, such as buys from 
+him or other users of new packages, trades between users and also battles from other 
+users. This is all public information to help the users understand the game and in my 
+opinion it only makes sense to make it publicly available! In the future it would be needed 
+to create custom call for filtering the information, because this history table is expected 
+to grow a lot in the future and would probably be best to implement a custom query for the 
+first 15 elements that incrementally delivers more as the user wants to see more. That would 
+be a great way to handle this in case of wanting to go in production.
+
 ·	Unit Test Design:
 
 As I was explaining before, the idea of testing that mapper would have been
