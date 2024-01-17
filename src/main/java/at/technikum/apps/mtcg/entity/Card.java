@@ -40,7 +40,7 @@ public class Card {
     this.inDeck = inDeck;
   }
 
-  public int getDamage() {
+  public Integer getDamage() {
     return damage;
   }
 

@@ -29,6 +29,21 @@ public class Helper {
     if (card1 == null || card2 == null) {
       throw new IllegalArgumentException("One or both cards are null.");
     }
+    if (card1.getName() == null || card2.getName() == null) {
+      throw new IllegalArgumentException("One or both cards have no name.");
+    }
+    if (
+      card1.getDamage() < 0 ||
+      card2.getDamage() < 0 ||
+      card1.getDamage() == 0 ||
+      card2.getDamage() == 0 ||
+      card1.getDamage() == null ||
+      card2.getDamage() == null
+    ) {
+      throw new IllegalArgumentException(
+        "One or both cards have no damage or damage is negative."
+      );
+    }
 
     boolean isCard1Monster = isMonster(card1);
     boolean isCard2Monster = isMonster(card2);
@@ -156,18 +171,30 @@ public class Helper {
     return secondParameter;
   }
 
+  // old version, problems with test!
+  // public final String[] transformStringtoStringArray(String string) {
+  //   String[] cardsIds = string.split(",");
+  //   for (int i = 0; i < cardsIds.length; i++) {
+  //     if (i == 0) {
+  //       cardsIds[i] = cardsIds[i].substring(2, cardsIds[i].length() - 1);
+  //     } else if (i == cardsIds.length - 1) {
+  //       cardsIds[i] = cardsIds[i].substring(1, cardsIds[i].length() - 2);
+  //     } else {
+  //       cardsIds[i] = cardsIds[i].substring(1, cardsIds[i].length() - 1);
+  //     }
+  //     System.err.println(cardsIds[i]);
+  //   }
+  //   return cardsIds;
+  // }
   public final String[] transformStringtoStringArray(String string) {
-    String[] cardsIds = string.split(",");
+    // Remove the leading and trailing brackets and split the string into an array
+    String[] cardsIds = string.substring(1, string.length() - 1).split(",");
+
+    // Remove the quotes and whitespace from each element
     for (int i = 0; i < cardsIds.length; i++) {
-      if (i == 0) {
-        cardsIds[i] = cardsIds[i].substring(2, cardsIds[i].length() - 1);
-      } else if (i == cardsIds.length - 1) {
-        cardsIds[i] = cardsIds[i].substring(1, cardsIds[i].length() - 2);
-      } else {
-        cardsIds[i] = cardsIds[i].substring(1, cardsIds[i].length() - 1);
-      }
-      System.err.println(cardsIds[i]);
+      cardsIds[i] = cardsIds[i].replaceAll("^\\s*\"|\"\\s*$", "");
     }
+
     return cardsIds;
   }
 }

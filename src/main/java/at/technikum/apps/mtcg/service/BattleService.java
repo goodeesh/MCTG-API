@@ -17,17 +17,38 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class BattleService {
 
   Auth auth = new Auth();
-  private UserRepository userRepository = new UserRepository();
-  private CardRepository cardRepository = new CardRepository();
-  private LobbyRepository lobbyRepository = new LobbyRepository();
-  private historyRepository historyRepository = new historyRepository();
+  private UserRepository userRepository;
+  private CardRepository cardRepository;
+  private LobbyRepository lobbyRepository;
+  private historyRepository historyRepository;
 
-  private synchronized String performBattle(
+  public BattleService(
+    UserRepository userRepository,
+    CardRepository cardRepository,
+    LobbyRepository lobbyRepository,
+    historyRepository historyRepository
+  ) {
+    this.userRepository = userRepository;
+    this.cardRepository = cardRepository;
+    this.lobbyRepository = lobbyRepository;
+    this.historyRepository = historyRepository;
+  }
+
+  public BattleService() {
+    this.userRepository = new UserRepository();
+    this.cardRepository = new CardRepository();
+    this.lobbyRepository = new LobbyRepository();
+    this.historyRepository = new historyRepository();
+  }
+
+  public synchronized String performBattle(
     List<Card> cards,
     List<Card> cardsToFight,
     String username,
-    User userToFight
-  ) throws InterruptedException {
+    User userToFight,
+    StringBuilder battleLog
+  ) {
+    Integer count = 1;
     if (
       lobbyRepository.isUserReady(username) &&
       lobbyRepository.isUserReady(userToFight.getUsername())
@@ -37,9 +58,27 @@ public class BattleService {
       lobbyRepository.leaveLobby(userToFight.getUsername());
       return null;
     } else {
+      battleLog.append(
+        "Battle between " +
+        username +
+        " and " +
+        userToFight.getUsername() +
+        "\n"
+      );
+      battleLog.append("Cards of " + username + ":\n");
+      for (Card card : cards) {
+        battleLog.append(card.getName() + "\n");
+      }
+      battleLog.append("Cards of " + userToFight.getUsername() + ":\n");
+      for (Card card : cardsToFight) {
+        battleLog.append(card.getName() + "\n");
+      }
       System.err.println("cards size: " + cards.size());
       System.err.println("cards to fight size: " + cardsToFight.size());
+
       while (cards.size() > 0 && cardsToFight.size() > 0) {
+        battleLog.append("Round " + count + "\n");
+        count++;
         int random = cards.size() == 1
           ? 0
           : Helper.getRandomNumber(0, cards.size() - 1);
@@ -49,6 +88,9 @@ public class BattleService {
           : Helper.getRandomNumber(0, cardsToFight.size() - 1);
         Card cardToFight = cardsToFight.get(randomOponent);
         Optional<Card> winner = Helper.whichCardWins(card, cardToFight);
+        battleLog.append(
+          "Card " + card.getName() + " vs " + cardToFight.getName() + "\n"
+        );
         if (winner.isEmpty()) {
           System.err.println("there is no winner");
         } else if (winner.get().getName().equals(card.getName())) {
@@ -78,18 +120,34 @@ public class BattleService {
           );
           System.err.println("cards size: " + cards.size());
         }
+        battleLog.append(
+          "Card " + winner.get().getName() + " from " + username + " won\n"
+        );
+        battleLog.append(
+          "Number of cards of " + username + ": " + cards.size() + "\n"
+        );
+        battleLog.append(
+          "Number of cards of " +
+          userToFight.getUsername() +
+          ": " +
+          cardsToFight.size() +
+          "\n"
+        );
       }
       lobbyRepository.userIsReady(username);
       lobbyRepository.userIsReady(userToFight.getUsername());
       if (cards.size() > 0) {
+        battleLog.append("Winner is " + username + "\n");
         return username;
       } else {
+        battleLog.append("Winner is " + userToFight.getUsername() + "\n");
         return userToFight.getUsername();
       }
     }
   }
 
   public String startBattle(String token) {
+    StringBuilder battleLog = new StringBuilder();
     String battleId = UUID.randomUUID().toString();
     String winner = null;
     String[] users;
@@ -121,7 +179,8 @@ public class BattleService {
       if (cardsToFight.size() != 4) {
         throw new RuntimeException("Deck needs to have 4 cards");
       }
-      winner = performBattle(cards, cardsToFight, username, userToFight);
+      winner =
+        performBattle(cards, cardsToFight, username, userToFight, battleLog);
       lobbyRepository.userIsReady(username);
       lobbyRepository.userIsReady(userToFight.getUsername());
     } catch (Exception e) {
@@ -129,7 +188,7 @@ public class BattleService {
       throw new RuntimeException("Something went wrong");
     }
     if (winner != null) {
-      historyRepository.saveEvent(battleId, type, users, winner);
+      historyRepository.saveEvent(battleId, type, users, battleLog.toString());
       userRepository.increaseWinsAndElo(winner);
       if (username.equals(winner)) {
         userRepository.increaseLossesAndDecreaseElo(userToFightUsername);
@@ -137,6 +196,7 @@ public class BattleService {
         userRepository.increaseLossesAndDecreaseElo(user.getUsername());
       }
     }
-    return "Battle finished";
+    System.err.println(battleLog.toString());
+    return battleLog.toString();
   }
 }
