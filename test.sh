@@ -360,7 +360,9 @@ curl -i -X GET http://localhost:10001/tradings --header "Authorization: Bearer k
 echo .
 curl -i -X GET http://localhost:10001/tradings --header "Authorization: Bearer altenhof-mtcgToken"
 echo .
-
-91a6471b-1426-43f6-ad65-6fc473e16f9f
+echo -e "\n******************************"
+echo "Special/extra feature, history route:"
+curl -i -X GET http://localhost:10001/history
+echo "******************************"
 # --------------------------------------------------
 echo "end..."
