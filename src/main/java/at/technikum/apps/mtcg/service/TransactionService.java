@@ -4,18 +4,22 @@ import at.technikum.apps.mtcg.entity.Package;
 import at.technikum.apps.mtcg.repository.CardRepository;
 import at.technikum.apps.mtcg.repository.PackageRepository;
 import at.technikum.apps.mtcg.repository.UserRepository;
+import at.technikum.apps.mtcg.repository.historyRepository;
 import java.util.List;
+import java.util.UUID;
 
 public class TransactionService {
 
   private final PackageRepository packageRepository;
   private final CardRepository cardRepository;
   private final UserRepository userRepository;
+  private final historyRepository historyRepository;
 
   public TransactionService() {
     this.packageRepository = new PackageRepository();
     this.cardRepository = new CardRepository();
     this.userRepository = new UserRepository();
+    this.historyRepository = new historyRepository();
   }
 
   public void buy(String username) {
@@ -38,6 +42,17 @@ public class TransactionService {
           username
         );
       }
+      //String id, String type, String[] users, String result
+      historyRepository.saveEvent(
+        UUID.randomUUID().toString(),
+        "buy",
+        new String[] { username },
+        "User " +
+        username +
+        " bought a package for " +
+        packageToBuy.getPrice() +
+        " coins"
+      );
       packageRepository.delete(packageId);
     }
   }

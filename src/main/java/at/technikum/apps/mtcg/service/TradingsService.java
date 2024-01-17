@@ -5,13 +5,16 @@ import at.technikum.apps.mtcg.entity.Trading;
 import at.technikum.apps.mtcg.helper.Helper;
 import at.technikum.apps.mtcg.repository.CardRepository;
 import at.technikum.apps.mtcg.repository.TradingRepository;
+import at.technikum.apps.mtcg.repository.historyRepository;
 import java.util.List;
+import java.util.UUID;
 
 public class TradingsService {
 
   private final Auth auth = new Auth();
   private final TradingRepository tradingRepository;
   private final CardRepository cardRepository = new CardRepository();
+  private final historyRepository historyRepository = new historyRepository();
 
   public TradingsService() {
     this.tradingRepository = new TradingRepository();
@@ -60,6 +63,13 @@ public class TradingsService {
   }
 
   public void acceptTrade(String tradeId, String token, String cardId) {
+    String cardIdFromTrade = tradingRepository
+      .findById(tradeId)
+      .getCard()
+      .getId();
+    String usernameFromTrade = cardRepository
+      .getCardById(cardIdFromTrade)
+      .getOwnerUsername();
     if (token == null) {
       throw new RuntimeException("UnauthorizedError");
     }
@@ -102,6 +112,22 @@ public class TradingsService {
 
     if (!tradingRepository.executeTrade(tradeId, cardId)) {
       throw new RuntimeException("Something went wrong");
+    } else {
+      System.err.println("Trade was executed");
+      historyRepository.saveEvent(
+        UUID.randomUUID().toString(),
+        "trade",
+        new String[] {
+          auth.extractUsernameFromToken(token),
+          usernameFromTrade,
+        },
+        "User " +
+        auth.extractUsernameFromToken(token) +
+        " traded card " +
+        cardId +
+        " for card " +
+        cardIdFromTrade
+      );
     }
   }
 }
