@@ -39,12 +39,10 @@ public class TransactionsController implements Controller {
           break;
       }
     }
-    Response response = new Response();
-    response.setStatus(HttpStatus.OK);
-    response.setContentType(HttpContentType.TEXT_PLAIN);
-    response.setBody("transanctions controller");
-
-    return response;
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
   }
 
   public Response buy(Request request) {

@@ -31,7 +31,10 @@ public class SessionsController implements Controller {
       default:
         break;
     }
-    return new Response(HttpStatus.METHOD_NOT_ALLOWED, "Method not allowed");
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
   }
 
   public Response create(Request request) {

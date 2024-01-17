@@ -23,12 +23,10 @@ public class BattlesController implements Controller {
       default:
         break;
     }
-    Response response = new Response();
-    response.setStatus(HttpStatus.OK);
-    response.setContentType(HttpContentType.TEXT_PLAIN);
-    response.setBody("battles controller");
-
-    return response;
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
   }
 
   private Response startBattle(Request request) {

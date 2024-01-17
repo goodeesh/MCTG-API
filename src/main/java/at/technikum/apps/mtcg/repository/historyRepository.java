@@ -1,14 +1,43 @@
 package at.technikum.apps.mtcg.repository;
 
 import at.technikum.apps.mtcg.data.Database;
+import at.technikum.apps.mtcg.entity.EventHistory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class historyRepository {
 
   private static final Database database = new Database();
+
+  public EventHistory[] getHistory(String token) {
+    List<EventHistory> historyList = new ArrayList<>();
+    try (
+      Connection connection = database.getConnection();
+      PreparedStatement statement = connection.prepareStatement(
+        "SELECT * FROM history"
+      );
+    ) {
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        EventHistory eventHistory = new EventHistory(
+          resultSet.getString("id"),
+          resultSet.getString("type"),
+          resultSet.getString("users").split(","),
+          resultSet.getTimestamp("time").toString(),
+          resultSet.getString("result")
+        );
+        historyList.add(eventHistory);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Something went wrong", e);
+    }
+    return historyList.toArray(new EventHistory[0]);
+  }
 
   public void saveEvent(String id, String type, String[] users, String result) {
     try (

@@ -34,12 +34,10 @@ public class PackagesController implements Controller {
       default:
         break;
     }
-    Response response = new Response();
-    response.setStatus(HttpStatus.OK);
-    response.setContentType(HttpContentType.TEXT_PLAIN);
-    response.setBody("packages controller");
-
-    return response;
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
   }
 
   public Response create(Request request) {

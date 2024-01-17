@@ -1,26 +1,25 @@
 package at.technikum.apps.mtcg.controller;
 
-import at.technikum.apps.mtcg.service.ScoreboardService;
-import at.technikum.server.http.HttpContentType;
+import at.technikum.apps.mtcg.service.HistoryService;
 import at.technikum.server.http.HttpStatus;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ScoreboardController implements Controller {
+public class HistoryController implements Controller {
 
-  private ScoreboardService scoreboardService = new ScoreboardService();
+  private HistoryService historyService = new HistoryService();
 
   @Override
   public boolean supports(String route) {
-    return route.equals("/scoreboard");
+    return route.equals("/history");
   }
 
   @Override
   public Response handle(Request request) {
     switch (request.getMethod()) {
       case "GET":
-        return handleGet(request);
+        return getHistory(request);
       default:
         break;
     }
@@ -30,15 +29,13 @@ public class ScoreboardController implements Controller {
     );
   }
 
-  private Response handleGet(Request request) {
+  private Response getHistory(Request request) {
     String token = request.getAuthorization();
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       return new Response(
         HttpStatus.OK,
-        objectMapper.writeValueAsString(
-          scoreboardService.displayScoreboard(token)
-        )
+        objectMapper.writeValueAsString(historyService.getHistory(token))
       );
     } catch (Exception e) {
       if (

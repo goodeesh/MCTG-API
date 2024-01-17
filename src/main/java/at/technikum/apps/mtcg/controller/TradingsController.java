@@ -52,12 +52,10 @@ public class TradingsController implements Controller {
       }
     }
 
-    Response response = new Response();
-    response.setStatus(HttpStatus.OK);
-    response.setContentType(HttpContentType.TEXT_PLAIN);
-    response.setBody("tradings controller");
-
-    return response;
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
   }
 
   public Response findAll(Request request) {

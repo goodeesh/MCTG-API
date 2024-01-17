@@ -28,12 +28,10 @@ public class DeckController implements Controller {
       default:
         break;
     }
-    Response response = new Response();
-    response.setStatus(HttpStatus.OK);
-    response.setContentType(HttpContentType.TEXT_PLAIN);
-    response.setBody("deck controller");
-
-    return response;
+    return new Response(
+      HttpStatus.METHOD_NOT_ALLOWED,
+      "This request is not supported"
+    );
   }
 
   private final Response getCardsFromUser(Request request) {

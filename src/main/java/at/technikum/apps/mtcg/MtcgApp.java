@@ -4,6 +4,7 @@ import at.technikum.apps.mtcg.controller.BattlesController;
 import at.technikum.apps.mtcg.controller.CardsController;
 import at.technikum.apps.mtcg.controller.Controller;
 import at.technikum.apps.mtcg.controller.DeckController;
+import at.technikum.apps.mtcg.controller.HistoryController;
 import at.technikum.apps.mtcg.controller.PackagesController;
 import at.technikum.apps.mtcg.controller.ScoreboardController;
 import at.technikum.apps.mtcg.controller.SessionsController;
@@ -34,6 +35,7 @@ public class MtcgApp implements ServerApplication {
     controllers.add(new ScoreboardController());
     controllers.add(new BattlesController());
     controllers.add(new TradingsController());
+    controllers.add(new HistoryController());
   }
 
   @Override
