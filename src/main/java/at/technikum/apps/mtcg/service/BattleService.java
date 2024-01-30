@@ -88,9 +88,19 @@ public class BattleService {
           : Helper.getRandomNumber(0, cardsToFight.size() - 1);
         Card cardToFight = cardsToFight.get(randomOponent);
         Optional<Card> winner = Helper.whichCardWins(card, cardToFight);
-        battleLog.append(
-          "Card " + card.getName() + " vs " + cardToFight.getName() + "\n"
-        );
+        if (!winner.isEmpty()) {
+          battleLog.append(
+            "Card " + card.getName() + " vs " + cardToFight.getName() + "\n"
+          );
+        } else {
+          battleLog.append(
+            "Card " +
+            card.getName() +
+            " vs " +
+            cardToFight.getName() +
+            " resulted in a draw\n"
+          );
+        }
         if (winner.isEmpty()) {
           System.err.println("there is no winner");
         } else if (winner.get().getName().equals(card.getName())) {

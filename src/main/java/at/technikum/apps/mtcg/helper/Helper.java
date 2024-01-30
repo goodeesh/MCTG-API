@@ -71,12 +71,7 @@ public class Helper {
     } else if (card1.getDamage() < card2.getDamage()) {
       return Optional.of(card2);
     } else {
-      // Draw - randomly select one of the cards
-      if (getRandomNumber(0, 1) == 0) {
-        return Optional.of(card1);
-      } else {
-        return Optional.of(card2);
-      }
+      return Optional.empty();
     }
   }
 
@@ -102,11 +97,7 @@ public class Helper {
     } else if (card1Damage < card2Damage) {
       return Optional.of(card2);
     } else {
-      if (getRandomNumber(0, 1) == 0) {
-        return Optional.of(card1);
-      } else {
-        return Optional.of(card2);
-      }
+      return Optional.empty();
     }
   }
 
@@ -135,11 +126,7 @@ public class Helper {
     } else if (spellDamage > monsterDamage) {
       return Optional.of(spell);
     } else {
-      if (getRandomNumber(0, 1) == 0) {
-        return Optional.of(monster);
-      } else {
-        return Optional.of(spell);
-      }
+      return Optional.empty();
     }
   }
 
